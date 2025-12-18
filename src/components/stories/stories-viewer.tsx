@@ -1,0 +1,222 @@
+"use client";
+
+import React, { useEffect, useCallback, useRef, useState } from "react";
+import { AnimatePresence } from "framer-motion";
+import { WrappedData } from "@/types/wrapped";
+import { SLIDE_CONFIGS, TOTAL_SLIDES } from "@/types/slides";
+import { useWrappedStore } from "@/stores/wrapped-store";
+import { ProgressIndicator } from "./progress-indicator";
+import { NavigationOverlay } from "./navigation-overlay";
+import { StorySlide } from "./story-slide";
+import { CoverSlide } from "./slides/cover-slide";
+import { CommitsSlide } from "./slides/commits-slide";
+import { PullRequestsSlide } from "./slides/pull-requests-slide";
+import { PRHighlightsSlide } from "./slides/pr-highlights-slide";
+import { ReviewsSlide } from "./slides/reviews-slide";
+import { ActivitySlide } from "./slides/activity-slide";
+import { ContributorsSlide } from "./slides/contributors-slide";
+import { CodeChangesSlide } from "./slides/code-changes-slide";
+import { CommunitySlide } from "./slides/community-slide";
+import { PersonalitySlide } from "./slides/personality-slide";
+import { AugmentSlide } from "./slides/augment-slide";
+import { FinaleSlide } from "./slides/finale-slide";
+import { ShareButton } from "../sharing/share-button";
+import { X, Pause, Play } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+interface StoriesViewerProps {
+  data: WrappedData;
+}
+
+export function StoriesViewer({ data }: StoriesViewerProps) {
+  const router = useRouter();
+  const containerRef = useRef<HTMLDivElement>(null);
+  const {
+    currentSlideIndex,
+    isPlaying,
+    isPaused,
+    direction,
+    nextSlide,
+    prevSlide,
+    pause,
+    resume,
+    togglePlay,
+    reset,
+  } = useWrappedStore();
+
+  const [progress, setProgress] = useState(0);
+
+  const currentSlideConfig = SLIDE_CONFIGS[currentSlideIndex];
+  const isLastSlide = currentSlideIndex === TOTAL_SLIDES - 1;
+
+  // Auto-advance logic
+  useEffect(() => {
+    if (!isPlaying || isPaused || isLastSlide) {
+      return;
+    }
+
+    const duration = currentSlideConfig.duration;
+    const interval = 50; // Update progress every 50ms
+    const increment = (interval / duration) * 100;
+
+    const timer = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          nextSlide();
+          return 0;
+        }
+        return prev + increment;
+      });
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, [currentSlideIndex, isPlaying, isPaused, isLastSlide, currentSlideConfig.duration, nextSlide]);
+
+  // Reset progress when slide changes
+  useEffect(() => {
+    setProgress(0);
+  }, [currentSlideIndex]);
+
+  // Reset on unmount
+  useEffect(() => {
+    return () => reset();
+  }, [reset]);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight" || e.key === " ") {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevSlide();
+      } else if (e.key === "Escape") {
+        router.push("/");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [nextSlide, prevSlide, router]);
+
+  const handlePauseStart = useCallback(() => {
+    pause();
+  }, [pause]);
+
+  const handlePauseEnd = useCallback(() => {
+    resume();
+  }, [resume]);
+
+  const handleClose = () => {
+    router.push("/");
+  };
+
+  const renderSlideContent = () => {
+    switch (currentSlideConfig.type) {
+      case "cover":
+        return <CoverSlide repo={data.repo} year={data.year} />;
+      case "commits":
+        return <CommitsSlide commits={data.commits} year={data.year} />;
+      case "pull-requests":
+        return <PullRequestsSlide pullRequests={data.pullRequests} year={data.year} />;
+      case "pr-highlights":
+        return <PRHighlightsSlide pullRequests={data.pullRequests} year={data.year} />;
+      case "reviews":
+        return <ReviewsSlide reviews={data.reviews} year={data.year} />;
+      case "activity":
+        return <ActivitySlide activity={data.activity} year={data.year} />;
+      case "contributors":
+        return <ContributorsSlide contributors={data.contributors} year={data.year} />;
+      case "code-changes":
+        return <CodeChangesSlide codeChanges={data.codeChanges} year={data.year} />;
+      case "community":
+        return (
+          <CommunitySlide
+            community={data.community}
+            issues={data.issues}
+            year={data.year}
+          />
+        );
+      case "personality":
+        return (
+          <PersonalitySlide
+            personality={data.personality}
+            velocity={data.velocity}
+            year={data.year}
+          />
+        );
+      case "augment":
+        return <AugmentSlide pullRequests={data.pullRequests} />;
+      case "finale":
+        return (
+          <FinaleSlide
+            repo={data.repo}
+            commits={data.commits}
+            contributors={data.contributors}
+            year={data.year}
+          />
+        );
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-background flex items-center justify-center dark">
+      {/* Desktop background */}
+      <div className="absolute inset-0 bg-muted/30 hidden md:block" />
+
+      {/* Story container */}
+      <div
+        ref={containerRef}
+        className="relative w-full h-full md:w-[400px] md:h-[711px] md:rounded-lg overflow-hidden md:shadow-2xl md:border md:border-border"
+        style={{ maxHeight: "100vh" }}
+      >
+        <ProgressIndicator currentIndex={currentSlideIndex} progress={progress} />
+
+        {/* Controls */}
+        <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
+          <ShareButton containerRef={containerRef} />
+          <button
+            onClick={togglePlay}
+            className="p-2 rounded bg-muted/50 hover:bg-muted/70 transition-colors"
+            aria-label={isPlaying ? "Pause" : "Play"}
+          >
+            {isPlaying ? (
+              <Pause className="h-4 w-4 text-foreground" />
+            ) : (
+              <Play className="h-4 w-4 text-foreground" />
+            )}
+          </button>
+          <button
+            onClick={handleClose}
+            className="p-2 rounded bg-muted/50 hover:bg-muted/70 transition-colors"
+            aria-label="Close"
+          >
+            <X className="h-4 w-4 text-foreground" />
+          </button>
+        </div>
+
+        {/* Slide content */}
+        <AnimatePresence mode="wait" custom={direction}>
+          <StorySlide
+            key={currentSlideIndex}
+            gradientClass={currentSlideConfig.gradientClass}
+            direction={direction}
+          >
+            {renderSlideContent()}
+          </StorySlide>
+        </AnimatePresence>
+
+        {/* Navigation overlay */}
+        <NavigationOverlay
+          onPrev={prevSlide}
+          onNext={nextSlide}
+          onPauseStart={handlePauseStart}
+          onPauseEnd={handlePauseEnd}
+        />
+      </div>
+    </div>
+  );
+}

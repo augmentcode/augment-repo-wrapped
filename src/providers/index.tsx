@@ -1,0 +1,15 @@
+"use client";
+
+import { SessionProvider } from "next-auth/react";
+import { ThemeProvider } from "./theme-provider";
+import { QueryProvider } from "./query-provider";
+
+export function Providers({ children }: { children: React.ReactNode }) {
+  return (
+    <SessionProvider>
+      <QueryProvider>
+        <ThemeProvider>{children}</ThemeProvider>
+      </QueryProvider>
+    </SessionProvider>
+  );
+}
