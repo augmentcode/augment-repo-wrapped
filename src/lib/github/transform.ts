@@ -600,6 +600,7 @@ export function transformReviewStats(
   prs: GitHubPullRequest[],
   reviewsByPR: Map<number, GitHubReview[]>
 ): ReviewStats {
+
   let totalReviews = 0;
   const reviewerData = new Map<string, {
     avatarUrl: string;

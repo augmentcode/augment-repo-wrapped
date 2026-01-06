@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { AlertCircle, ArrowLeft, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { use } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface WrappedPageProps {
   params: Promise<{
@@ -18,9 +19,10 @@ interface WrappedPageProps {
 export default function WrappedPage({ params }: WrappedPageProps) {
   const resolvedParams = use(params);
   const { owner, repo } = resolvedParams;
-  const currentYear = new Date().getFullYear();
+  const searchParams = useSearchParams();
+  const year = Number(searchParams.get("year")) || new Date().getFullYear();
 
-  const { data, isLoading, error, refetch } = useWrappedData(owner, repo, currentYear);
+  const { data, isLoading, error, refetch } = useWrappedData(owner, repo, year);
 
   if (isLoading) {
     return (

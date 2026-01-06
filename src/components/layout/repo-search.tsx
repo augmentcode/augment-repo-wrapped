@@ -8,6 +8,7 @@ import { ArrowRight } from "lucide-react";
 
 export function RepoSearch() {
   const [repoUrl, setRepoUrl] = useState("");
+  const [year, setYear] = useState(new Date().getFullYear());
   const [error, setError] = useState("");
   const router = useRouter();
 
@@ -39,8 +40,11 @@ export function RepoSearch() {
       return;
     }
 
-    router.push(`/wrapped/${parsed.owner}/${parsed.repo}`);
+    router.push(`/wrapped/${parsed.owner}/${parsed.repo}?year=${year}`);
   };
+
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-sm">
@@ -50,8 +54,19 @@ export function RepoSearch() {
           placeholder="owner/repo"
           value={repoUrl}
           onChange={(e) => setRepoUrl(e.target.value)}
-          className="h-10 font-mono text-sm bg-card border-border"
+          className="h-10 font-mono text-sm bg-card border-border flex-1"
         />
+        <select
+          value={year}
+          onChange={(e) => setYear(Number(e.target.value))}
+          className="h-10 px-3 bg-card border border-border text-sm font-mono rounded-md"
+        >
+          {years.map((y) => (
+            <option key={y} value={y}>
+              {y}
+            </option>
+          ))}
+        </select>
         <Button
           type="submit"
           variant="secondary"
