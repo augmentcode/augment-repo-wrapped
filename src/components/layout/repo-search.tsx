@@ -1,16 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
+import { WrappedData } from "@/types/wrapped";
 
-export function RepoSearch() {
+interface RepoSearchProps {
+  wrappedData?: WrappedData | null;
+}
+
+export function RepoSearch({ wrappedData }: RepoSearchProps) {
   const [repoUrl, setRepoUrl] = useState("");
-  const [year, setYear] = useState(new Date().getFullYear());
+  // Default to previous year since most people want to review a completed year
+  const [year, setYear] = useState(new Date().getFullYear() - 1);
   const [error, setError] = useState("");
   const router = useRouter();
+
+  // Load last used repo from localStorage on mount
+  useEffect(() => {
+    const lastRepo = localStorage.getItem("lastRepoInput");
+    if (lastRepo) {
+      setRepoUrl(lastRepo);
+    }
+  }, []);
+
+  // Sync year with wrapped data when available
+  useEffect(() => {
+    if (wrappedData?.year) {
+      setYear(wrappedData.year);
+    }
+  }, [wrappedData?.year]);
 
   const parseRepoUrl = (input: string): { owner: string; repo: string } | null => {
     input = input.trim().replace(/\/+$/, "");
@@ -34,11 +55,19 @@ export function RepoSearch() {
     e.preventDefault();
     setError("");
 
-    const parsed = parseRepoUrl(repoUrl);
-    if (!parsed) {
-      setError("Enter a valid repository (e.g., owner/repo)");
+    if (!repoUrl.trim()) {
+      setError("Please enter a repository");
       return;
     }
+
+    const parsed = parseRepoUrl(repoUrl);
+    if (!parsed) {
+      setError("Invalid format. Use owner/repo or paste a GitHub URL");
+      return;
+    }
+
+    // Save to localStorage for next time
+    localStorage.setItem("lastRepoInput", repoUrl);
 
     router.push(`/wrapped/${parsed.owner}/${parsed.repo}?year=${year}`);
   };
@@ -51,10 +80,15 @@ export function RepoSearch() {
       <div className="flex gap-2">
         <Input
           type="text"
-          placeholder="owner/repo"
+          placeholder="vercel/next.js"
           value={repoUrl}
-          onChange={(e) => setRepoUrl(e.target.value)}
-          className="h-10 font-mono text-sm bg-card border-border flex-1"
+          onChange={(e) => {
+            setRepoUrl(e.target.value);
+            if (error) setError(""); // Clear error on input
+          }}
+          className={`h-10 font-mono text-sm bg-card flex-1 ${
+            error ? "border-red-500 focus-visible:ring-red-500" : "border-border"
+          }`}
         />
         <select
           value={year}
@@ -77,7 +111,10 @@ export function RepoSearch() {
         </Button>
       </div>
       {error && (
-        <p className="mt-2 text-sm text-destructive">{error}</p>
+        <p className="text-sm text-red-600 dark:text-red-400 mt-2 flex items-center gap-1">
+          <span className="text-base">⚠️</span>
+          {error}
+        </p>
       )}
     </form>
   );

@@ -26,11 +26,15 @@ import { useRouter } from "next/navigation";
 
 interface StoriesViewerProps {
   data: WrappedData;
+  initialSlideIndex?: number;
 }
 
-export function StoriesViewer({ data }: StoriesViewerProps) {
+export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProps) {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [hasInitialized, setHasInitialized] = useState(false);
+  const initRef = useRef(false);
+
   const {
     currentSlideIndex,
     isPlaying,
@@ -42,7 +46,32 @@ export function StoriesViewer({ data }: StoriesViewerProps) {
     resume,
     togglePlay,
     reset,
+    goToSlide,
   } = useWrappedStore();
+
+  // Initialize and jump to initial slide if provided
+  useEffect(() => {
+    // Prevent double initialization in strict mode
+    if (initRef.current) return;
+    initRef.current = true;
+
+    // Use requestAnimationFrame to defer state updates until after render
+    requestAnimationFrame(() => {
+      // Reset store first
+      reset();
+
+      // Then jump to the initial slide if needed
+      if (initialSlideIndex > 0 && initialSlideIndex < TOTAL_SLIDES) {
+        goToSlide(initialSlideIndex);
+      }
+
+      // Mark as initialized after a brief delay to ensure store is ready
+      setTimeout(() => {
+        setHasInitialized(true);
+      }, 100);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   const [progress, setProgress] = useState(0);
 
@@ -51,7 +80,7 @@ export function StoriesViewer({ data }: StoriesViewerProps) {
 
   // Auto-advance logic
   useEffect(() => {
-    if (!isPlaying || isPaused || isLastSlide) {
+    if (!hasInitialized || !isPlaying || isPaused || isLastSlide) {
       return;
     }
 
@@ -70,7 +99,7 @@ export function StoriesViewer({ data }: StoriesViewerProps) {
     }, interval);
 
     return () => clearInterval(timer);
-  }, [currentSlideIndex, isPlaying, isPaused, isLastSlide, currentSlideConfig.duration, nextSlide]);
+  }, [hasInitialized, currentSlideIndex, isPlaying, isPaused, isLastSlide, currentSlideConfig.duration, nextSlide]);
 
   // Reset progress when slide changes
   useEffect(() => {
@@ -163,9 +192,9 @@ export function StoriesViewer({ data }: StoriesViewerProps) {
   };
 
   return (
-    <div className="fixed inset-0 bg-background flex items-center justify-center dark">
+    <div className="fixed inset-0 bg-black flex items-center justify-center dark">
       {/* Desktop background */}
-      <div className="absolute inset-0 bg-muted/30 hidden md:block" />
+      <div className="absolute inset-0 bg-black/50 hidden md:block" />
 
       {/* Story container */}
       <div
