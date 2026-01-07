@@ -36,7 +36,7 @@ export function CommunitySlide({ community, issues, year }: CommunitySlideProps)
           <div className="text-2xl sm:text-3xl font-medium">
             {formatNumber(community.currentStars)}
           </div>
-          <div className="eyebrow text-muted-foreground mt-1">Stars</div>
+          <div className="eyebrow text-muted-foreground mt-1">Total Stars</div>
         </motion.div>
 
         <motion.div
@@ -49,7 +49,7 @@ export function CommunitySlide({ community, issues, year }: CommunitySlideProps)
           <div className="text-2xl sm:text-3xl font-medium">
             {formatNumber(community.currentForks)}
           </div>
-          <div className="eyebrow text-muted-foreground mt-1">Forks</div>
+          <div className="eyebrow text-muted-foreground mt-1">Total Forks</div>
         </motion.div>
       </div>
 

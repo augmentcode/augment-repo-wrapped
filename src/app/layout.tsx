@@ -16,21 +16,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Repo Wrapped - Your GitHub Year in Review",
+  title: "Repo Wrapped - GitHub Repository Analytics",
   description:
-    "Generate a beautiful Instagram Stories-style year-in-review for any GitHub repository. See commits, contributors, PRs, and more!",
-  keywords: ["GitHub", "year in review", "repository", "statistics", "wrapped"],
+    "Analytics for your GitHub repositories. Visualize commits, pull requests, code changes, and team contributions across any time period. Perfect for retrospectives, progress tracking, and celebrating your team's achievements.",
+  keywords: ["GitHub", "analytics", "repository", "statistics", "metrics", "insights", "wrapped"],
   openGraph: {
-    title: "Repo Wrapped - Your GitHub Year in Review",
+    title: "Repo Wrapped - GitHub Repository Analytics",
     description:
-      "Generate a beautiful year-in-review for any GitHub repository",
+      "Analytics for your GitHub repositories. Visualize commits, pull requests, code changes, and team contributions across any time period.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Repo Wrapped - Your GitHub Year in Review",
+    title: "Repo Wrapped - GitHub Repository Analytics",
     description:
-      "Generate a beautiful year-in-review for any GitHub repository",
+      "Analytics for your GitHub repositories. Visualize commits, pull requests, code changes, and team contributions across any time period.",
   },
 };
 

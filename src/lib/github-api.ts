@@ -1,4 +1,3 @@
-import { Octokit } from "octokit";
 import { graphql } from "@octokit/graphql";
 
 const GITHUB_GRAPHQL_ENDPOINT = "https://api.github.com/graphql";
@@ -73,14 +72,12 @@ export interface ReviewRequest {
 
 export class GitHubAPI {
   private token: string;
-  private octokit: Octokit;
   private graphqlClient: typeof graphql;
   private rateLimitRemaining: number | null = null;
   private rateLimitResetAt: Date | null = null;
 
   constructor(token: string) {
     this.token = token;
-    this.octokit = new Octokit({ auth: token });
     this.graphqlClient = graphql.defaults({
       headers: {
         authorization: `Bearer ${token}`,
@@ -476,6 +473,107 @@ export class GitHubAPI {
       // Safety limit
       if (allPRs.length > 5000) {
         console.warn("Reached 5k PR limit for detailed fetch, stopping");
+        break;
+      }
+    }
+
+    return allPRs;
+  }
+
+  /**
+   * Fetch PR data for Wrapped with reviews in a single GraphQL query
+   * This is much more efficient than REST API (1-3 calls vs 150+ calls)
+   */
+  async fetchWrappedPRData(
+    owner: string,
+    repo: string,
+    year: number
+  ): Promise<any[]> {
+    const startDate = new Date(year, 0, 1).toISOString();
+    const endDate = new Date(year, 11, 31, 23, 59, 59).toISOString();
+
+    const query = `
+      query($owner: String!, $repo: String!, $cursor: String) {
+        repository(owner: $owner, name: $repo) {
+          pullRequests(
+            first: 100
+            after: $cursor
+            orderBy: {field: CREATED_AT, direction: DESC}
+          ) {
+            nodes {
+              number
+              title
+              state
+              createdAt
+              closedAt
+              mergedAt
+              additions
+              deletions
+              commits {
+                totalCount
+              }
+              comments {
+                totalCount
+              }
+              url
+              author {
+                login
+                avatarUrl
+              }
+              reviews(first: 100) {
+                nodes {
+                  id
+                  state
+                  submittedAt
+                  author {
+                    login
+                    avatarUrl
+                  }
+                }
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    `;
+
+    const allPRs: any[] = [];
+    let hasNextPage = true;
+    let cursor: string | null = null;
+
+    while (hasNextPage) {
+      const data = await this.query(query, {
+        owner,
+        repo,
+        cursor,
+      });
+
+      const prs = data.repository.pullRequests.nodes;
+
+      // Filter by year
+      const yearPRs = prs.filter((pr: any) => {
+        const createdAt = new Date(pr.createdAt);
+        return createdAt >= new Date(startDate) && createdAt <= new Date(endDate);
+      });
+
+      allPRs.push(...yearPRs);
+
+      // Check if we've gone past the year
+      const earliestPR = prs[prs.length - 1];
+      if (earliestPR && new Date(earliestPR.createdAt) < new Date(startDate)) {
+        break;
+      }
+
+      hasNextPage = data.repository.pullRequests.pageInfo.hasNextPage;
+      cursor = data.repository.pullRequests.pageInfo.endCursor;
+
+      // Safety limit
+      if (allPRs.length >= 1000) {
+        console.warn("Reached 1000 PR limit for Wrapped");
         break;
       }
     }

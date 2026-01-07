@@ -440,7 +440,7 @@ export function transformContributorStats(
     }));
 
   return {
-    total: contributors.length,
+    total: contributorData.length, // Year-specific: contributors who had activity this year
     newThisYear: risingStars.length,
     topContributors: finalTopContributors,
     topByPRs,
@@ -502,11 +502,11 @@ export function transformCodeStats(
 }
 
 export function transformCommunityStats(repo: GitHubRepo): CommunityStats {
-  // Note: GitHub API doesn't provide historical star data
-  // We'd need to track this over time for accurate "gained" numbers
+  // Note: GitHub API doesn't provide historical star/fork data
+  // These represent total counts, not yearly gains
   return {
-    starsGained: 0, // Would need historical tracking
-    forksGained: 0, // Would need historical tracking
+    starsGained: 0, // Not available from API
+    forksGained: 0, // Not available from API
     currentStars: repo.stargazers_count,
     currentForks: repo.forks_count,
     starGrowthPercentage: 0,
@@ -571,13 +571,13 @@ export function transformActivityStats(
     averageCommits: Math.round(busiestDay.count / weeksInYear),
   };
 
-  // Calculate longest streak (simplified - would need daily data for accuracy)
-  let longestStreak = 0;
+  // Calculate longest streak in weeks (using weekly data)
+  let longestStreakWeeks = 0;
   let currentStreak = 0;
   for (const week of yearActivity) {
     if (week.total > 0) {
       currentStreak++;
-      longestStreak = Math.max(longestStreak, currentStreak);
+      longestStreakWeeks = Math.max(longestStreakWeeks, currentStreak);
     } else {
       currentStreak = 0;
     }
@@ -590,7 +590,7 @@ export function transformActivityStats(
       commits: busiestMonth.count,
     },
     busiestDayOfWeek,
-    longestStreak: longestStreak * 7, // Convert weeks to approximate days
+    longestStreak: longestStreakWeeks, // Streak in weeks (not days)
     commitsByMonth,
     commitsByDayOfWeek,
   };
@@ -811,15 +811,16 @@ export function transformVelocityStats(
   }
 
   // Determine trend based on quarterly comparison
-  const quarters = [quarterlyComparison.q1, quarterlyComparison.q2, quarterlyComparison.q3, quarterlyComparison.q4];
-  const nonZeroQuarters = quarters.filter((q) => q > 0);
   let trend: "increasing" | "decreasing" | "stable" = "stable";
 
-  if (nonZeroQuarters.length >= 2) {
-    const firstHalf = quarterlyComparison.q1 + quarterlyComparison.q2;
-    const secondHalf = quarterlyComparison.q3 + quarterlyComparison.q4;
+  const firstHalf = quarterlyComparison.q1 + quarterlyComparison.q2;
+  const secondHalf = quarterlyComparison.q3 + quarterlyComparison.q4;
+  const total = firstHalf + secondHalf;
+
+  // Only calculate trend if there's activity
+  if (total > 0) {
     const diff = secondHalf - firstHalf;
-    const threshold = (firstHalf + secondHalf) * 0.1; // 10% threshold
+    const threshold = total * 0.15; // 15% threshold for more sensitivity
 
     if (diff > threshold) trend = "increasing";
     else if (diff < -threshold) trend = "decreasing";

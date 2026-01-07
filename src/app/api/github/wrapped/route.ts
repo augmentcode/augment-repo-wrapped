@@ -8,10 +8,13 @@ import {
   fetchCommitActivity,
   fetchCodeFrequency,
   fetchLanguages,
-  fetchPullRequests,
-  fetchPRReviews,
   fetchIssues,
 } from "@/lib/github/client";
+import { GitHubAPI } from "@/lib/github-api";
+import {
+  transformGraphQLPRsToREST,
+  extractReviewsFromGraphQLPRs,
+} from "@/lib/github/graphql-transform";
 import { assembleWrappedData } from "@/lib/github/transform";
 
 export async function GET(request: NextRequest) {
@@ -40,6 +43,7 @@ export async function GET(request: NextRequest) {
     const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear();
 
     const octokit = createGitHubClient(accessToken);
+    const githubAPI = new GitHubAPI(accessToken);
 
     // Fetch all data in parallel where possible
     const [repoInfo, contributors] = await Promise.all([
@@ -56,15 +60,16 @@ export async function GET(request: NextRequest) {
         fetchLanguages(octokit, owner, repo),
       ]);
 
-    // Fetch PRs and issues (these are paginated)
-    const [prs, issues] = await Promise.all([
-      fetchPullRequests(octokit, owner, repo, year),
+    // Use GraphQL to fetch PRs with reviews (much more efficient!)
+    // This replaces ~150 REST API calls with 1-3 GraphQL calls
+    const [graphqlPRs, issues] = await Promise.all([
+      githubAPI.fetchWrappedPRData(owner, repo, year),
       fetchIssues(octokit, owner, repo, year),
     ]);
 
-    // Fetch reviews for PRs
-    const prNumbers = prs.map((pr) => pr.number);
-    const reviewsByPR = await fetchPRReviews(octokit, owner, repo, prNumbers);
+    // Transform GraphQL data to REST format for existing logic
+    const prs = transformGraphQLPRsToREST(graphqlPRs);
+    const reviewsByPR = extractReviewsFromGraphQLPRs(graphqlPRs);
 
     const wrappedData = assembleWrappedData(
       repoInfo,
@@ -82,6 +87,13 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(wrappedData);
   } catch (error) {
     console.error("Error fetching wrapped data:", error);
+
+    // Log the full error for debugging
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
+    }
 
     if (error instanceof Error) {
       // Handle GitHub API errors
@@ -120,6 +132,7 @@ export async function GET(request: NextRequest) {
       {
         error: "Internal Error",
         message: "An unexpected error occurred. Please try again.",
+        details: error instanceof Error ? error.message : String(error),
       },
       { status: 500 }
     );

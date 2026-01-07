@@ -8,16 +8,33 @@ async function fetchWrappedData(
   repo: string,
   year: number
 ): Promise<WrappedData> {
-  const response = await fetch(
-    `/api/github/wrapped?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}&year=${year}`
-  );
+  try {
+    const response = await fetch(
+      `/api/github/wrapped?owner=${encodeURIComponent(owner)}&repo=${encodeURIComponent(repo)}&year=${year}`
+    );
 
-  if (!response.ok) {
-    const error: WrappedError = await response.json();
-    throw new Error(error.message || "Failed to fetch wrapped data");
+    console.log("API response status:", response.status, response.statusText);
+
+    if (!response.ok) {
+      let errorMessage = "Failed to fetch wrapped data";
+      try {
+        const error: WrappedError = await response.json();
+        console.error("API error response:", error);
+        errorMessage = error.message || error.error || errorMessage;
+      } catch (parseError) {
+        console.error("Failed to parse error response:", parseError);
+        errorMessage = `API returned ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    const data = await response.json();
+    console.log("Wrapped data received:", data);
+    return data;
+  } catch (error) {
+    console.error("Error fetching wrapped data:", error);
+    throw error;
   }
-
-  return response.json();
 }
 
 export function useWrappedData(owner: string, repo: string, year?: number) {

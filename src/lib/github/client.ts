@@ -44,14 +44,15 @@ export async function fetchContributorStats(
   repo: string
 ): Promise<GitHubContributorStats[]> {
   // This endpoint may return 202 if data is being computed
-  // We need to retry
+  // We need to retry with exponential backoff
   for (let i = 0; i < 5; i++) {
     const response = await octokit.repos.getContributorsStats({ owner, repo });
     if (response.status === 200 && response.data) {
       return response.data as GitHubContributorStats[];
     }
-    // Wait before retrying
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Exponential backoff: 1s, 2s, 4s, 8s, 10s (capped)
+    const delay = Math.min(1000 * Math.pow(2, i), 10000);
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
   return [];
 }
@@ -67,7 +68,9 @@ export async function fetchCommitActivity(
     if (response.status === 200 && response.data) {
       return response.data as GitHubCommitActivity[];
     }
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Exponential backoff: 1s, 2s, 4s, 8s, 10s (capped)
+    const delay = Math.min(1000 * Math.pow(2, i), 10000);
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
   return [];
 }
@@ -82,7 +85,9 @@ export async function fetchCodeFrequency(
     if (response.status === 200 && response.data) {
       return response.data as [number, number, number][];
     }
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    // Exponential backoff: 1s, 2s, 4s, 8s, 10s (capped)
+    const delay = Math.min(1000 * Math.pow(2, i), 10000);
+    await new Promise((resolve) => setTimeout(resolve, delay));
   }
   return [];
 }
