@@ -17,6 +17,12 @@ import {
 } from "@/lib/github/graphql-transform";
 import { assembleWrappedData } from "@/lib/github/transform";
 
+// In-memory cache for wrapped data
+// Key: `${owner}/${repo}/${year}`
+// Value: { data, timestamp }
+const cache = new Map<string, { data: any; timestamp: number }>();
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+
 export async function GET(request: NextRequest) {
   try {
     const accessToken = await getAccessToken();
@@ -41,6 +47,16 @@ export async function GET(request: NextRequest) {
     }
 
     const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear();
+
+    // Check cache first
+    const cacheKey = `${owner}/${repo}/${year}`;
+    const cached = cache.get(cacheKey);
+    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+      console.log(`[Cache HIT] ${cacheKey}`);
+      return NextResponse.json(cached.data);
+    }
+
+    console.log(`[Cache MISS] ${cacheKey} - Fetching from GitHub...`);
 
     const octokit = createGitHubClient(accessToken);
     const githubAPI = new GitHubAPI(accessToken);
@@ -83,6 +99,14 @@ export async function GET(request: NextRequest) {
       reviewsByPR,
       year
     );
+
+    // Cache the result
+    cache.set(cacheKey, {
+      data: wrappedData,
+      timestamp: Date.now(),
+    });
+
+    console.log(`[Cache SET] ${cacheKey} - Cached for ${CACHE_TTL / 1000}s`);
 
     return NextResponse.json(wrappedData);
   } catch (error) {

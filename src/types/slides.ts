@@ -19,19 +19,20 @@ export interface SlideConfig {
 }
 
 // On-brand dark theme using the Augment color scheme
+// Durations increased for better readability
 export const SLIDE_CONFIGS: SlideConfig[] = [
-  { type: "cover", duration: 5000, gradientClass: "bg-background" },
-  { type: "commits", duration: 7000, gradientClass: "bg-background" },
-  { type: "pull-requests", duration: 7000, gradientClass: "bg-background" },
-  { type: "pr-highlights", duration: 8000, gradientClass: "bg-background" },
-  { type: "reviews", duration: 8000, gradientClass: "bg-background" },
-  { type: "activity", duration: 8000, gradientClass: "bg-background" },
-  { type: "contributors", duration: 10000, gradientClass: "bg-background" },
-  { type: "code-changes", duration: 7000, gradientClass: "bg-background" },
-  { type: "community", duration: 6000, gradientClass: "bg-background" },
-  { type: "personality", duration: 8000, gradientClass: "bg-background" },
-  { type: "augment", duration: 6000, gradientClass: "bg-background" },
-  { type: "finale", duration: 0, gradientClass: "bg-background" },
+  { type: "cover", duration: 7000, gradientClass: "bg-background" },           // 5s → 7s
+  { type: "commits", duration: 10000, gradientClass: "bg-background" },        // 7s → 10s
+  { type: "pull-requests", duration: 10000, gradientClass: "bg-background" },  // 7s → 10s
+  { type: "pr-highlights", duration: 12000, gradientClass: "bg-background" },  // 8s → 12s
+  { type: "reviews", duration: 12000, gradientClass: "bg-background" },        // 8s → 12s
+  { type: "activity", duration: 12000, gradientClass: "bg-background" },       // 8s → 12s
+  { type: "contributors", duration: 15000, gradientClass: "bg-background" },   // 10s → 15s
+  { type: "code-changes", duration: 10000, gradientClass: "bg-background" },   // 7s → 10s
+  { type: "community", duration: 9000, gradientClass: "bg-background" },       // 6s → 9s
+  { type: "personality", duration: 12000, gradientClass: "bg-background" },    // 8s → 12s
+  { type: "augment", duration: 9000, gradientClass: "bg-background" },         // 6s → 9s
+  { type: "finale", duration: 0, gradientClass: "bg-background" },             // No auto-advance
 ];
 
 export const TOTAL_SLIDES = SLIDE_CONFIGS.length;
