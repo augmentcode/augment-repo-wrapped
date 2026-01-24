@@ -59,8 +59,6 @@ export function transformCommitStats(
     .filter((week) => week.week >= yearStart && week.week <= yearEnd)
     .map((week) => week.total);
 
-  const totalThisYear = weeklyActivity.reduce((sum, count) => sum + count, 0);
-
   // Get top committers from contributor stats
   const topCommitters = contributorStats
     .map((stat) => {
@@ -87,6 +85,17 @@ export function transformCommitStats(
           avatarUrl: c.avatar_url,
           commits: c.contributions,
         }));
+
+  // Calculate totalThisYear from contributorStats if available, otherwise from weeklyActivity
+  // This is more reliable as contributorStats has per-contributor weekly data
+  const totalThisYear = contributorStats.length > 0
+    ? contributorStats.reduce((sum, stat) => {
+        const yearlyCommits = stat.weeks
+          .filter((w) => w.w >= yearStart && w.w <= yearEnd)
+          .reduce((acc, w) => acc + w.c, 0);
+        return sum + yearlyCommits;
+      }, 0)
+    : weeklyActivity.reduce((sum, count) => sum + count, 0);
 
   const total = contributors.reduce((sum, c) => sum + c.contributions, 0);
 

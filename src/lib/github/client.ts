@@ -210,9 +210,13 @@ export async function fetchIssues(
   const startDate = new Date(year, 0, 1);
   const endDate = new Date(year, 11, 31, 23, 59, 59);
 
+  console.log(`[fetchIssues] Fetching issues for ${owner}/${repo} year ${year}`);
+  console.log(`[fetchIssues] Date range: ${startDate.toISOString()} to ${endDate.toISOString()}`);
+
   const allIssues: GitHubIssue[] = [];
   let page = 1;
   const perPage = 100;
+  let totalFetched = 0;
 
   while (true) {
     const { data } = await octokit.issues.listForRepo({
@@ -227,25 +231,37 @@ export async function fetchIssues(
 
     if (data.length === 0) break;
 
+    totalFetched += data.length;
+    console.log(`[fetchIssues] Page ${page}: fetched ${data.length} items (total: ${totalFetched})`);
+
     // Filter issues (exclude PRs) by year
     const yearIssues = data
       .filter((issue) => !issue.pull_request)
       .filter((issue) => {
         const createdAt = new Date(issue.created_at);
-        return createdAt >= startDate && createdAt <= endDate;
+        const inRange = createdAt >= startDate && createdAt <= endDate;
+        if (!inRange && !issue.pull_request) {
+          console.log(`[fetchIssues] Filtered out issue #${issue.number} (created: ${issue.created_at})`);
+        }
+        return inRange;
       });
 
+    console.log(`[fetchIssues] ${yearIssues.length} issues matched year ${year} on page ${page}`);
     allIssues.push(...(yearIssues as GitHubIssue[]));
 
     // If earliest issue in batch is before our year, stop
     const earliestIssue = new Date(data[data.length - 1].created_at);
-    if (earliestIssue < startDate) break;
+    if (earliestIssue < startDate) {
+      console.log(`[fetchIssues] Reached issues before ${year}, stopping pagination`);
+      break;
+    }
 
     // Safety limit
     if (page >= 10) break;
     page++;
   }
 
+  console.log(`[fetchIssues] Final result: ${allIssues.length} issues for year ${year}`);
   return allIssues;
 }
 

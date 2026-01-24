@@ -37,15 +37,70 @@ async function fetchWrappedData(
   }
 }
 
+function getInitialData(owner: string, repo: string, year: number): WrappedData | undefined {
+  if (typeof window === "undefined") return undefined;
+
+  try {
+    // First, try sessionStorage (most recent, from query cache)
+    const cacheKey = `query_cache_${owner}_${repo}_${year}`;
+    const sessionCached = sessionStorage.getItem(cacheKey);
+
+    if (sessionCached) {
+      const { data, dataUpdatedAt } = JSON.parse(sessionCached);
+      const age = Date.now() - dataUpdatedAt;
+
+      // Use session cache if less than 5 minutes old
+      if (age < 1000 * 60 * 5) {
+        console.log("Using cached data from sessionStorage for instant load");
+        return data as WrappedData;
+      }
+    }
+
+    // Fallback to localStorage
+    const cached = localStorage.getItem("lastWrappedData");
+    if (!cached) return undefined;
+
+    const data = JSON.parse(cached) as WrappedData;
+
+    // Only use cached data if it matches the requested repo/year
+    if (
+      data.repo.owner.login === owner &&
+      data.repo.name === repo &&
+      data.year === year
+    ) {
+      console.log("Using cached data from localStorage for instant load");
+      return data;
+    }
+  } catch (e) {
+    console.error("Failed to parse cached data:", e);
+  }
+
+  return undefined;
+}
+
 export function useWrappedData(owner: string, repo: string, year?: number) {
   const currentYear = year || new Date().getFullYear();
 
-  return useQuery({
+  const query = useQuery({
     queryKey: ["wrapped", owner, repo, currentYear],
-    queryFn: () => fetchWrappedData(owner, repo, currentYear),
+    queryFn: async () => {
+      const data = await fetchWrappedData(owner, repo, currentYear);
+
+      // Save to sessionStorage for instant navigation
+      const cacheKey = `query_cache_${owner}_${repo}_${currentYear}`;
+      sessionStorage.setItem(cacheKey, JSON.stringify({
+        data,
+        dataUpdatedAt: Date.now(),
+      }));
+
+      return data;
+    },
+    initialData: () => getInitialData(owner, repo, currentYear),
     staleTime: 1000 * 60 * 5, // 5 minutes
     gcTime: 1000 * 60 * 30, // 30 minutes
     retry: 1,
     enabled: !!owner && !!repo,
   });
+
+  return query;
 }

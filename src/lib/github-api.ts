@@ -492,6 +492,9 @@ export class GitHubAPI {
     const startDate = new Date(year, 0, 1).toISOString();
     const endDate = new Date(year, 11, 31, 23, 59, 59).toISOString();
 
+    console.log(`[fetchWrappedPRData] Fetching PRs for ${owner}/${repo} year ${year}`);
+    console.log(`[fetchWrappedPRData] Date range: ${startDate} to ${endDate}`);
+
     const query = `
       query($owner: String!, $repo: String!, $cursor: String) {
         repository(owner: $owner, name: $repo) {
@@ -544,6 +547,7 @@ export class GitHubAPI {
     const allPRs: any[] = [];
     let hasNextPage = true;
     let cursor: string | null = null;
+    let totalFetched = 0;
 
     while (hasNextPage) {
       const data = await this.query(query, {
@@ -553,18 +557,34 @@ export class GitHubAPI {
       });
 
       const prs = data.repository.pullRequests.nodes;
+      totalFetched += prs.length;
+
+      console.log(`[fetchWrappedPRData] Fetched ${prs.length} PRs (total: ${totalFetched})`);
+
+      // Log first few PRs for debugging
+      if (prs.length > 0) {
+        console.log(`[fetchWrappedPRData] First PR: #${prs[0].number} created at ${prs[0].createdAt}`);
+        console.log(`[fetchWrappedPRData] Last PR: #${prs[prs.length - 1].number} created at ${prs[prs.length - 1].createdAt}`);
+      }
 
       // Filter by year
       const yearPRs = prs.filter((pr: any) => {
         const createdAt = new Date(pr.createdAt);
-        return createdAt >= new Date(startDate) && createdAt <= new Date(endDate);
+        const inRange = createdAt >= new Date(startDate) && createdAt <= new Date(endDate);
+        if (!inRange) {
+          console.log(`[fetchWrappedPRData] Filtered out PR #${pr.number} (created: ${pr.createdAt})`);
+        }
+        return inRange;
       });
+
+      console.log(`[fetchWrappedPRData] ${yearPRs.length} PRs matched year ${year}`);
 
       allPRs.push(...yearPRs);
 
       // Check if we've gone past the year
       const earliestPR = prs[prs.length - 1];
       if (earliestPR && new Date(earliestPR.createdAt) < new Date(startDate)) {
+        console.log(`[fetchWrappedPRData] Reached PRs before ${year}, stopping pagination`);
         break;
       }
 
@@ -578,6 +598,7 @@ export class GitHubAPI {
       }
     }
 
+    console.log(`[fetchWrappedPRData] Final result: ${allPRs.length} PRs for year ${year}`);
     return allPRs;
   }
 }

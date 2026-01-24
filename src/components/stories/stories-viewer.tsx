@@ -90,11 +90,13 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
 
     const timer = setInterval(() => {
       setProgress((prev) => {
-        if (prev >= 100) {
-          nextSlide();
-          return 0;
+        const newProgress = prev + increment;
+        if (newProgress >= 100) {
+          // Schedule nextSlide to run after this render cycle
+          setTimeout(() => nextSlide(), 0);
+          return 100;
         }
-        return prev + increment;
+        return newProgress;
       });
     }, interval);
 
