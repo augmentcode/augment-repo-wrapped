@@ -187,19 +187,20 @@ export function HomeContent({ initialData }: HomeContentProps) {
 
           <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
             {[
-              { name: "Cover", icon: "📊" },
-              { name: "Commits", icon: "💻" },
-              { name: "PRs", icon: "🔀" },
-              { name: "Activity", icon: "📈" },
-              { name: "Team", icon: "👥" },
-              { name: "Code", icon: "⚡" },
-              { name: "Community", icon: "⭐" },
-              { name: "Augment", icon: "🤖" },
-              { name: "Finale", icon: "🎉" },
+              { name: "Cover", icon: "📊", slideIndex: 0 },
+              { name: "Commits", icon: "💻", slideIndex: 1 },
+              { name: "PRs", icon: "🔀", slideIndex: 2 },
+              { name: "Activity", icon: "📈", slideIndex: 5 },
+              { name: "Team", icon: "👥", slideIndex: 6 },
+              { name: "Code", icon: "⚡", slideIndex: 7 },
+              { name: "Community", icon: "⭐", slideIndex: 8 },
+              { name: "Augment", icon: "🤖", slideIndex: 10 },
+              { name: "Finale", icon: "🎉", slideIndex: 11 },
             ].map((slide, i) => (
               <SlidePreview
                 key={i}
                 index={i}
+                slideIndex={slide.slideIndex}
                 name={slide.name}
                 icon={slide.icon}
                 data={wrappedData}
@@ -453,11 +454,13 @@ function StepCard({
 
 function SlidePreview({
   index,
+  slideIndex,
   name,
   icon,
   data,
 }: {
   index: number;
+  slideIndex: number;
   name: string;
   icon: string;
   data: WrappedData | null;
@@ -471,8 +474,8 @@ function SlidePreview({
       return num.toLocaleString();
     };
 
-    switch (index) {
-      case 0: // Cover
+    switch (name) {
+      case "Cover":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -480,7 +483,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">{data.year}</div>
           </div>
         );
-      case 1: // Commits
+      case "Commits":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -488,7 +491,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">commits</div>
           </div>
         );
-      case 2: // PRs
+      case "PRs":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -496,7 +499,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">PRs</div>
           </div>
         );
-      case 3: // Activity
+      case "Activity":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -504,7 +507,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">busiest</div>
           </div>
         );
-      case 4: // Team
+      case "Team":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -512,7 +515,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">contributors</div>
           </div>
         );
-      case 5: // Code
+      case "Code":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -520,7 +523,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">lines added</div>
           </div>
         );
-      case 6: // Community
+      case "Community":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -528,7 +531,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">stars gained</div>
           </div>
         );
-      case 7: // Augment
+      case "Augment":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -536,7 +539,7 @@ function SlidePreview({
             <div className="text-[7px] text-muted-foreground">Code</div>
           </div>
         );
-      case 8: // Finale
+      case "Finale":
         return (
           <div className="text-center">
             <div className="text-lg mb-1">{icon}</div>
@@ -551,8 +554,8 @@ function SlidePreview({
 
   const handleClick = () => {
     if (data) {
-      // Navigate to wrapped page with slide index
-      window.location.href = `/wrapped/${data.repo.owner.login}/${data.repo.name}?year=${data.year}&slide=${index}`;
+      // Navigate to wrapped page with the correct slide index
+      window.location.href = `/wrapped/${data.repo.owner.login}/${data.repo.name}?year=${data.year}&slide=${slideIndex}`;
     }
   };
 
