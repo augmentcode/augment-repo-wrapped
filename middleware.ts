@@ -4,6 +4,13 @@ import { NextResponse } from "next/server";
 const PAT_COOKIE_NAME = "github_pat";
 
 export default auth((req) => {
+  const isOnApi = req.nextUrl.pathname.startsWith("/api");
+
+  // Skip middleware for API routes - let them handle their own auth
+  if (isOnApi) {
+    return;
+  }
+
   // Check for OAuth session OR PAT cookie
   const hasOAuthSession = !!req.auth;
   const hasPATCookie = req.cookies.has(PAT_COOKIE_NAME);
@@ -11,7 +18,6 @@ export default auth((req) => {
 
   const isOnWrapped = req.nextUrl.pathname.startsWith("/wrapped");
   const isOnLogin = req.nextUrl.pathname === "/login";
-  const isOnApi = req.nextUrl.pathname.startsWith("/api");
 
   // Protect wrapped routes - require authentication
   if (isOnWrapped && !isLoggedIn) {
