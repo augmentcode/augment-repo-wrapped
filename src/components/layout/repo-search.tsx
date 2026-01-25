@@ -80,7 +80,7 @@ export function RepoSearch({ wrappedData }: RepoSearchProps) {
       <div className="flex gap-2">
         <Input
           type="text"
-          placeholder="vercel/next.js"
+          placeholder="owner/repo or github.com/owner/repo"
           value={repoUrl}
           onChange={(e) => {
             setRepoUrl(e.target.value);
@@ -114,6 +114,11 @@ export function RepoSearch({ wrappedData }: RepoSearchProps) {
         <p className="text-sm text-red-600 dark:text-red-400 mt-2 flex items-center gap-1">
           <span className="text-base">⚠️</span>
           {error}
+        </p>
+      )}
+      {!error && (
+        <p className="text-xs text-muted-foreground mt-2">
+          Examples: <span className="font-mono">vercel/next.js</span> or <span className="font-mono">https://github.com/facebook/react</span>
         </p>
       )}
     </form>

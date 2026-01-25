@@ -128,13 +128,13 @@ export function HomeContent({ initialData }: HomeContentProps) {
             <p className="eyebrow text-secondary mb-6">GitHub Repository Analytics</p>
 
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-medium tracking-tight mb-3">
-              Repo Wrapped
+              Repo Insights
             </h1>
             <p className="text-muted-foreground mb-4">
               by Augment Code
             </p>
             <p className="text-lg text-muted-foreground mb-10">
-              Analytics for your GitHub repositories. Visualize commits, pull requests, code changes, and team contributions across any time period. Perfect for retrospectives, progress tracking, and celebrating your team&apos;s achievements.
+              Visual analytics for your GitHub repositories. Track commits, pull requests, code changes, and team contributions across any time period. Perfect for retrospectives, progress tracking, and celebrating your team&apos;s achievements.
             </p>
 
             {/* How it works - moved here */}
@@ -146,7 +146,7 @@ export function HomeContent({ initialData }: HomeContentProps) {
                 <StepCard
                   number="01"
                   title="Enter repository"
-                  description="Paste any GitHub repo URL and select a time period"
+                  description="Enter owner/repo (e.g., vercel/next.js) or paste a full GitHub URL"
                 />
                 <StepCard
                   number="02"
@@ -468,7 +468,8 @@ function SlidePreview({
   const getSlidePreview = () => {
     if (!data) return null;
 
-    const formatNumber = (num: number) => {
+    const formatNumber = (num: number | undefined) => {
+      if (num === undefined || num === null) return '0';
       if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
       if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
       return num.toLocaleString();

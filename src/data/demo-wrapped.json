@@ -1,0 +1,262 @@
+{
+  "repo": {
+    "name": "next.js",
+    "fullName": "vercel/next.js",
+    "description": "The React Framework",
+    "owner": {
+      "login": "vercel",
+      "avatarUrl": "https://avatars.githubusercontent.com/u/14985020?v=4"
+    },
+    "language": "JavaScript",
+    "stars": 125000,
+    "forks": 26800,
+    "isPrivate": false,
+    "createdAt": "2016-10-05T23:52:23Z",
+    "updatedAt": "2024-12-31T23:59:59Z"
+  },
+  "year": 2024,
+  "commits": {
+    "total": 28500,
+    "totalThisYear": 3420,
+    "topCommitters": [
+      {
+        "login": "timneutkens",
+        "commits": 485,
+        "avatarUrl": "https://avatars.githubusercontent.com/u/6324199?v=4"
+      },
+      {
+        "login": "ijjk",
+        "commits": 412,
+        "avatarUrl": "https://avatars.githubusercontent.com/u/22380829?v=4"
+      },
+      {
+        "login": "huozhi",
+        "commits": 328,
+        "avatarUrl": "https://avatars.githubusercontent.com/u/4800338?v=4"
+      }
+    ],
+    "weeklyActivity": [45, 52, 48, 61, 58, 72, 65, 59, 68, 71, 63, 58, 66, 69, 74, 62, 57, 64, 70, 68, 73, 61, 59, 67, 71, 65, 63, 69, 72, 66, 58, 64, 70, 68, 62, 59, 67, 71, 65, 63, 69, 72, 66, 58, 64, 70, 68, 62, 59, 67, 71, 65],
+    "averagePerWeek": 66
+  },
+  "pullRequests": {
+    "opened": 2845,
+    "merged": 2156,
+    "closed": 412,
+    "averageMergeTimeHours": 18.5,
+    "fastestMerge": {
+      "number": 59102,
+      "title": "Fix typo in documentation",
+      "author": "leerob",
+      "authorAvatar": "https://avatars.githubusercontent.com/u/9113740?v=4",
+      "url": "https://github.com/vercel/next.js/pull/59102",
+      "mergeTimeMinutes": 15
+    },
+    "slowestMerge": {
+      "number": 58123,
+      "title": "Major refactor of routing system",
+      "author": "timneutkens",
+      "authorAvatar": "https://avatars.githubusercontent.com/u/6324199?v=4",
+      "url": "https://github.com/vercel/next.js/pull/58123",
+      "mergeTimeDays": 45
+    },
+    "biggestPR": {
+      "number": 58234,
+      "title": "Refactor build system for improved performance",
+      "author": "timneutkens",
+      "authorAvatar": "https://avatars.githubusercontent.com/u/6324199?v=4",
+      "url": "https://github.com/vercel/next.js/pull/58234",
+      "additions": 4521,
+      "deletions": 3218,
+      "totalLines": 7739
+    },
+    "mostCommentedPR": {
+      "number": 58456,
+      "title": "Add support for React Server Components",
+      "author": "huozhi",
+      "authorAvatar": "https://avatars.githubusercontent.com/u/4800338?v=4",
+      "url": "https://github.com/vercel/next.js/pull/58456",
+      "comments": 156
+    },
+    "mostRevisedPR": {
+      "number": 58789,
+      "title": "Improve TypeScript types for App Router",
+      "author": "ijjk",
+      "authorAvatar": "https://avatars.githubusercontent.com/u/22380829?v=4",
+      "url": "https://github.com/vercel/next.js/pull/58789",
+      "commits": 42
+    },
+    "largestPR": {
+      "number": 58234,
+      "title": "Refactor build system for improved performance",
+      "additions": 4521,
+      "deletions": 3218
+    },
+    "sizeDistribution": {
+      "tiny": 856,
+      "small": 1245,
+      "medium": 512,
+      "large": 156,
+      "huge": 76
+    },
+    "avgLinesPerPR": 245,
+    "prsByDayOfWeek": [
+      { "day": "Monday", "count": 412 },
+      { "day": "Tuesday", "count": 485 },
+      { "day": "Wednesday", "count": 521 },
+      { "day": "Thursday", "count": 498 },
+      { "day": "Friday", "count": 456 },
+      { "day": "Saturday", "count": 245 },
+      { "day": "Sunday", "count": 228 }
+    ],
+    "busiestDay": "Wednesday"
+  },
+  "reviews": {
+    "totalReviews": 4521,
+    "avgTimeToFirstReviewHours": 4.2,
+    "avgTimeToMergeAfterApprovalHours": 8.5,
+    "approvalRate": 78.5,
+    "topReviewers": [
+      {
+        "login": "timneutkens",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/6324199?v=4",
+        "reviewCount": 412,
+        "avgResponseTimeHours": 3.5
+      },
+      {
+        "login": "ijjk",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/22380829?v=4",
+        "reviewCount": 385,
+        "avgResponseTimeHours": 4.2
+      },
+      {
+        "login": "huozhi",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/4800338?v=4",
+        "reviewCount": 298,
+        "avgResponseTimeHours": 5.1
+      }
+    ],
+    "mostThoroughReviewers": [
+      {
+        "login": "timneutkens",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/6324199?v=4",
+        "avgCommentsPerReview": 5.2,
+        "totalComments": 2142
+      },
+      {
+        "login": "sokra",
+        "avatarUrl": "https://avatars.githubusercontent.com/u/1365881?v=4",
+        "avgCommentsPerReview": 4.8,
+        "totalComments": 1456
+      }
+    ],
+    "topReviewerPairs": [
+      {
+        "author": "ijjk",
+        "authorAvatar": "https://avatars.githubusercontent.com/u/22380829?v=4",
+        "reviewer": "timneutkens",
+        "reviewerAvatar": "https://avatars.githubusercontent.com/u/6324199?v=4",
+        "count": 156
+      },
+      {
+        "author": "huozhi",
+        "authorAvatar": "https://avatars.githubusercontent.com/u/4800338?v=4",
+        "reviewer": "timneutkens",
+        "reviewerAvatar": "https://avatars.githubusercontent.com/u/6324199?v=4",
+        "count": 142
+      }
+    ]
+  },
+  "activity": {
+    "busiestMonth": {
+      "month": "March",
+      "monthIndex": 2,
+      "commits": 485
+    },
+    "busiestDayOfWeek": {
+      "day": "Wednesday",
+      "dayIndex": 3,
+      "averageCommits": 72
+    },
+    "longestStreak": 127,
+    "commitsByMonth": [
+      { "month": "January", "monthIndex": 0, "count": 285 },
+      { "month": "February", "monthIndex": 1, "count": 312 },
+      { "month": "March", "monthIndex": 2, "count": 485 },
+      { "month": "April", "monthIndex": 3, "count": 398 },
+      { "month": "May", "monthIndex": 4, "count": 356 },
+      { "month": "June", "monthIndex": 5, "count": 412 },
+      { "month": "July", "monthIndex": 6, "count": 298 },
+      { "month": "August", "monthIndex": 7, "count": 245 },
+      { "month": "September", "monthIndex": 8, "count": 312 },
+      { "month": "October", "monthIndex": 9, "count": 385 },
+      { "month": "November", "monthIndex": 10, "count": 298 },
+      { "month": "December", "monthIndex": 11, "count": 234 }
+    ],
+    "commitsByDayOfWeek": [
+      { "day": "Monday", "dayIndex": 1, "count": 512 },
+      { "day": "Tuesday", "dayIndex": 2, "count": 598 },
+      { "day": "Wednesday", "dayIndex": 3, "count": 685 },
+      { "day": "Thursday", "dayIndex": 4, "count": 612 },
+      { "day": "Friday", "dayIndex": 5, "count": 545 },
+      { "day": "Saturday", "dayIndex": 6, "count": 245 },
+      { "day": "Sunday", "dayIndex": 0, "count": 223 }
+    ]
+  },
+  "contributors": {
+    "total": 3245,
+    "new": 412,
+    "topContributors": [
+      {
+        "login": "timneutkens",
+        "contributions": 485,
+        "avatarUrl": "https://avatars.githubusercontent.com/u/6324199?v=4",
+        "firstContribution": "2016-10-25T14:32:18Z"
+      },
+      {
+        "login": "ijjk",
+        "contributions": 412,
+        "avatarUrl": "https://avatars.githubusercontent.com/u/22380829?v=4",
+        "firstContribution": "2018-03-15T09:21:45Z"
+      },
+      {
+        "login": "huozhi",
+        "contributions": 328,
+        "avatarUrl": "https://avatars.githubusercontent.com/u/4800338?v=4",
+        "firstContribution": "2019-07-22T16:48:32Z"
+      }
+    ]
+  },
+  "codeChanges": {
+    "additions": 285420,
+    "deletions": 198340,
+    "netChange": 87080,
+    "busiestWeek": {
+      "weekStart": "2024-03-18T00:00:00Z",
+      "additions": 12450,
+      "deletions": 8920
+    }
+  },
+  "community": {
+    "totalStars": 125000,
+    "newStars": 8420,
+    "totalForks": 26800,
+    "newForks": 1850
+  },
+  "issues": {
+    "total": 1842,
+    "closed": 1456,
+    "open": 386,
+    "averageTimeToClose": 12.5
+  },
+  "personality": {
+    "type": "The Innovator",
+    "description": "Always pushing boundaries with cutting-edge features",
+    "traits": ["Fast-paced", "Collaborative", "Quality-focused"]
+  },
+  "velocity": {
+    "averagePRsPerWeek": 54.8,
+    "peakWeek": "2024-06-10",
+    "peakPRs": 89
+  }
+}
+

@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { RepoInfo, CommitStats, ContributorStats } from "@/types/wrapped";
 import { Avatar } from "@/components/ui/avatar";
 import { formatNumber } from "@/lib/utils";
-import { PartyPopper, Share2 } from "lucide-react";
+import { PartyPopper, Share2, Github } from "lucide-react";
+import Link from "next/link";
 
 interface FinaleSlideProps {
   repo: RepoInfo;
@@ -12,6 +13,7 @@ interface FinaleSlideProps {
   contributors: ContributorStats;
   year: number;
   onShare?: () => void;
+  isDemo?: boolean;
 }
 
 export function FinaleSlide({
@@ -20,6 +22,7 @@ export function FinaleSlide({
   contributors,
   year,
   onShare,
+  isDemo = false,
 }: FinaleSlideProps) {
   // Generate confetti pieces with muted colors
   const confetti = Array.from({ length: 16 }, (_, i) => ({
@@ -107,16 +110,39 @@ export function FinaleSlide({
         Here&apos;s to {year + 1}!
       </motion.p>
 
-      <motion.button
-        onClick={onShare}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.55 }}
-        className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground font-medium py-3 px-6 hover:opacity-90 transition-opacity"
-      >
-        <Share2 className="h-4 w-4" />
-        Share
-      </motion.button>
+      {isDemo ? (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
+          className="flex flex-col gap-3 w-full"
+        >
+          <Link href="/login">
+            <button className="w-full inline-flex items-center justify-center gap-2 bg-secondary text-secondary-foreground font-medium py-3 px-6 hover:opacity-90 transition-opacity">
+              <Github className="h-4 w-4" />
+              Sign in to generate your own
+            </button>
+          </Link>
+          <button
+            onClick={onShare}
+            className="w-full inline-flex items-center justify-center gap-2 border border-border bg-card text-foreground font-medium py-3 px-6 hover:bg-muted transition-colors"
+          >
+            <Share2 className="h-4 w-4" />
+            Share this demo
+          </button>
+        </motion.div>
+      ) : (
+        <motion.button
+          onClick={onShare}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
+          className="inline-flex items-center gap-2 bg-secondary text-secondary-foreground font-medium py-3 px-6 hover:opacity-90 transition-opacity"
+        >
+          <Share2 className="h-4 w-4" />
+          Share
+        </motion.button>
+      )}
 
       <motion.div
         initial={{ opacity: 0 }}
@@ -124,7 +150,7 @@ export function FinaleSlide({
         transition={{ delay: 0.7 }}
         className="mt-8"
       >
-        <p className="eyebrow text-muted-foreground">Repo Wrapped</p>
+        <p className="eyebrow text-muted-foreground">Repo Insights</p>
         <p className="text-[10px] text-muted-foreground/60 tracking-wider">by Augment Code</p>
       </motion.div>
     </div>

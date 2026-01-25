@@ -16,6 +16,7 @@ import {
   extractReviewsFromGraphQLPRs,
 } from "@/lib/github/graphql-transform";
 import { assembleWrappedData } from "@/lib/github/transform";
+import { DEMO_CONFIG } from "@/lib/demo-config";
 
 // In-memory cache for wrapped data
 // Key: `${owner}/${repo}/${year}`
@@ -25,15 +26,6 @@ const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
 
 export async function GET(request: NextRequest) {
   try {
-    const accessToken = await getAccessToken();
-
-    if (!accessToken) {
-      return NextResponse.json(
-        { error: "Unauthorized", message: "Please sign in to continue" },
-        { status: 401 }
-      );
-    }
-
     const searchParams = request.nextUrl.searchParams;
     const owner = searchParams.get("owner");
     const repo = searchParams.get("repo");
@@ -47,6 +39,16 @@ export async function GET(request: NextRequest) {
     }
 
     const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear();
+
+    // Get access token
+    const accessToken = await getAccessToken();
+
+    if (!accessToken) {
+      return NextResponse.json(
+        { error: "Unauthorized", message: "Please sign in to continue" },
+        { status: 401 }
+      );
+    }
 
     // Check cache first
     const cacheKey = `${owner}/${repo}/${year}`;

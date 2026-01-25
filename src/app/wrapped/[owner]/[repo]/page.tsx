@@ -38,7 +38,7 @@ export default function WrappedPage({ params }: WrappedPageProps) {
     return (
       <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-32 sm:pt-40 text-white">
         <Spinner size="lg" className="mb-6" />
-        <h2 className="text-xl font-semibold mb-3">Generating your Wrapped...</h2>
+        <h2 className="text-xl font-semibold mb-3">Generating your insights...</h2>
         <p className="text-sm text-white/70">
           Fetching data for {owner}/{repo}
         </p>
@@ -51,7 +51,7 @@ export default function WrappedPage({ params }: WrappedPageProps) {
     return (
       <div className="fixed inset-0 bg-black flex flex-col items-center justify-start pt-24 sm:pt-32 text-white p-8">
         <AlertCircle className="h-16 w-16 text-red-400 mb-6" />
-        <h2 className="text-2xl font-bold mb-3">Unable to generate Wrapped</h2>
+        <h2 className="text-2xl font-bold mb-3">Unable to generate insights</h2>
         <p className="text-center text-white/70 mb-8 max-w-md">
           {error.message}
         </p>

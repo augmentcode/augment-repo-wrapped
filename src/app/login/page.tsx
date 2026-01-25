@@ -33,9 +33,8 @@ export default function LoginPage() {
         return;
       }
 
-      // Redirect to home page on success
-      router.push("/");
-      router.refresh();
+      // Redirect to home page on success with hard refresh
+      window.location.href = "/";
     } catch {
       setError("Failed to connect. Please try again.");
     } finally {
@@ -52,7 +51,7 @@ export default function LoginPage() {
               <span className="text-base font-medium text-secondary-foreground">R</span>
             </div>
           </div>
-          <h1 className="text-xl font-medium mb-1">Repo Wrapped</h1>
+          <h1 className="text-xl font-medium mb-1">Repo Insights</h1>
           <p className="eyebrow text-muted-foreground">by Augment Code</p>
         </div>
 
@@ -135,15 +134,28 @@ export default function LoginPage() {
                 Back to OAuth
               </Button>
 
-              <div className="pt-2 border-t border-border">
+              <div className="pt-2 border-t border-border space-y-2">
+                <p className="text-xs text-muted-foreground">
+                  <strong className="text-foreground">Required permissions:</strong>
+                </p>
+                <ul className="text-xs text-muted-foreground space-y-1 pl-4">
+                  <li className="flex items-start gap-2">
+                    <span className="text-secondary mt-0.5">•</span>
+                    <span><span className="font-mono text-foreground">repo</span> - Read repository data, commits, PRs, and issues</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-secondary mt-0.5">•</span>
+                    <span><span className="font-mono text-foreground">read:user</span> - Get your user information</span>
+                  </li>
+                </ul>
                 <a
-                  href="https://github.com/settings/tokens/new?description=Repo%20Wrapped&scopes=repo,read:user"
+                  href="https://github.com/settings/tokens/new?description=Repo%20Insights&scopes=repo,read:user"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors"
+                  className="flex items-center justify-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors pt-2"
                 >
                   <ExternalLink className="h-3 w-3" />
-                  Create a token with repo scope
+                  Create token on GitHub
                 </a>
               </div>
             </form>

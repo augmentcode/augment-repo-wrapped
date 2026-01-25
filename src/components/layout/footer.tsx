@@ -5,7 +5,7 @@ export function Footer() {
     <footer className="border-t border-border bg-background">
       <div className="container flex flex-col gap-4 py-6 px-6 mx-auto max-w-4xl sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
-          <span>Repo Wrapped</span>
+          <span>Repo Insights</span>
           <span className="text-border">·</span>
           <Link
             href="https://www.augmentcode.com"

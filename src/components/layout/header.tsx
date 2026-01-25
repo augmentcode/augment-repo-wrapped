@@ -27,7 +27,7 @@ export function Header() {
             <span className="text-[10px] font-medium text-secondary-foreground">R</span>
           </div>
           <div className="flex items-baseline gap-1.5">
-            <span className="font-medium text-sm">Repo Wrapped</span>
+            <span className="font-medium text-sm">Repo Insights</span>
             <span className="text-[10px] text-muted-foreground hidden sm:inline">by Augment</span>
           </div>
         </Link>

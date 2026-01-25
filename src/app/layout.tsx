@@ -16,21 +16,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Repo Wrapped - GitHub Repository Analytics",
+  title: "Repo Insights - GitHub Repository Analytics",
   description:
-    "Analytics for your GitHub repositories. Visualize commits, pull requests, code changes, and team contributions across any time period. Perfect for retrospectives, progress tracking, and celebrating your team's achievements.",
-  keywords: ["GitHub", "analytics", "repository", "statistics", "metrics", "insights", "wrapped"],
+    "Visual analytics for your GitHub repositories. Track commits, pull requests, code changes, and team contributions across any time period. Perfect for retrospectives, progress tracking, and celebrating your team's achievements.",
+  keywords: ["GitHub", "analytics", "repository", "statistics", "metrics", "insights", "data visualization"],
   openGraph: {
-    title: "Repo Wrapped - GitHub Repository Analytics",
+    title: "Repo Insights - GitHub Repository Analytics",
     description:
-      "Analytics for your GitHub repositories. Visualize commits, pull requests, code changes, and team contributions across any time period.",
+      "Visual analytics for your GitHub repositories. Track commits, pull requests, code changes, and team contributions across any time period.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Repo Wrapped - GitHub Repository Analytics",
+    title: "Repo Insights - GitHub Repository Analytics",
     description:
-      "Analytics for your GitHub repositories. Visualize commits, pull requests, code changes, and team contributions across any time period.",
+      "Visual analytics for your GitHub repositories. Track commits, pull requests, code changes, and team contributions across any time period.",
   },
 };
 

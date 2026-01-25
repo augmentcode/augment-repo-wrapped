@@ -21,8 +21,10 @@ import { PersonalitySlide } from "./slides/personality-slide";
 import { AugmentSlide } from "./slides/augment-slide";
 import { FinaleSlide } from "./slides/finale-slide";
 import { ShareButton } from "../sharing/share-button";
-import { X, Pause, Play } from "lucide-react";
+import { X, Pause, Play, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { DEMO_CONFIG } from "@/lib/demo-config";
+import Link from "next/link";
 
 interface StoriesViewerProps {
   data: WrappedData;
@@ -34,6 +36,9 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
   const containerRef = useRef<HTMLDivElement>(null);
   const [hasInitialized, setHasInitialized] = useState(false);
   const initRef = useRef(false);
+
+  // Check if this is demo mode
+  const isDemo = DEMO_CONFIG.isDemo(data.repo.owner.login, data.repo.name);
 
   const {
     currentSlideIndex,
@@ -186,6 +191,7 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
             commits={data.commits}
             contributors={data.contributors}
             year={data.year}
+            isDemo={isDemo}
           />
         );
       default:
@@ -197,6 +203,20 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
     <div className="fixed inset-0 bg-black flex items-center justify-center dark">
       {/* Desktop background */}
       <div className="absolute inset-0 bg-black/50 hidden md:block" />
+
+      {/* Demo banner */}
+      {isDemo && (
+        <div className="absolute top-0 left-0 right-0 z-50 bg-secondary/90 backdrop-blur-sm text-secondary-foreground px-4 py-2 text-center text-sm flex items-center justify-center gap-2">
+          <Info className="h-4 w-4" />
+          <span>
+            This is a demo for <strong>{data.repo.fullName}</strong>.{" "}
+            <Link href="/login" className="underline hover:no-underline">
+              Sign in
+            </Link>{" "}
+            to generate your own.
+          </span>
+        </div>
+      )}
 
       {/* Story container */}
       <div
