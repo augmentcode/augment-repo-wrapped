@@ -6,6 +6,11 @@
   "regions": ["iad1"],
   "env": {
     "NODE_ENV": "production"
+  },
+  "functions": {
+    "src/app/api/github/wrapped/route.ts": {
+      "maxDuration": 60
+    }
   }
 }
 

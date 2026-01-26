@@ -152,13 +152,27 @@ export async function GET(request: NextRequest) {
           { status: 401 }
         );
       }
+
+      // Check for timeout errors
+      if (error.message.includes("timeout") || error.message.includes("ETIMEDOUT")) {
+        return NextResponse.json(
+          {
+            error: "Timeout",
+            message: "This repository is taking too long to process. Try a smaller repository or a shorter time period.",
+          },
+          { status: 504 }
+        );
+      }
     }
+
+    // Return detailed error for debugging
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    console.error("Returning 500 error with message:", errorMessage);
 
     return NextResponse.json(
       {
         error: "Internal Error",
-        message: "An unexpected error occurred. Please try again.",
-        details: error instanceof Error ? error.message : String(error),
+        message: errorMessage || "An unexpected error occurred. Please try again.",
       },
       { status: 500 }
     );
