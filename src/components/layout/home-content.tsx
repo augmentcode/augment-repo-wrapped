@@ -235,7 +235,7 @@ export function HomeContent({ initialData, session }: HomeContentProps) {
             )}
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-9 gap-2">
+          <div className="grid grid-cols-3 sm:grid-cols-8 gap-2">
             {[
               { name: "Cover", icon: "📊", slideIndex: 0 },
               { name: "Commits", icon: "💻", slideIndex: 1 },
@@ -245,7 +245,6 @@ export function HomeContent({ initialData, session }: HomeContentProps) {
               { name: "Code", icon: "⚡", slideIndex: 7 },
               { name: "Community", icon: "⭐", slideIndex: 8 },
               { name: "Augment", icon: "🤖", slideIndex: 10 },
-              { name: "Finale", icon: "🎉", slideIndex: 11 },
             ].map((slide, i) => (
               <SlidePreview
                 key={i}
@@ -588,14 +587,6 @@ function SlidePreview({
             <div className="text-lg mb-1">{icon}</div>
             <div className="text-[8px] font-medium">Augment</div>
             <div className="text-[7px] text-muted-foreground">Code</div>
-          </div>
-        );
-      case "Finale":
-        return (
-          <div className="text-center">
-            <div className="text-lg mb-1">{icon}</div>
-            <div className="text-[8px] font-medium">{data.year}</div>
-            <div className="text-[7px] text-muted-foreground">wrapped</div>
           </div>
         );
       default:
