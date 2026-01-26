@@ -8,14 +8,14 @@ import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { formatDuration } from "@/lib/utils";
-import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 interface HomeContentProps {
   initialData?: WrappedData | null;
+  session?: Session | null;
 }
 
-export function HomeContent({ initialData }: HomeContentProps) {
-  const { data: session } = useSession();
+export function HomeContent({ initialData, session }: HomeContentProps) {
   const [wrappedData, setWrappedData] = useState<WrappedData | null>(initialData || null);
   const [comparisonYear, setComparisonYear] = useState<number | null>(null);
   const [comparisonData, setComparisonData] = useState<WrappedData | null>(null);
@@ -173,7 +173,7 @@ export function HomeContent({ initialData }: HomeContentProps) {
                       Click <strong>Generate</strong> below to see an example with <span className="font-mono">vercel/swr</span>.
                       No sign-in required!
                     </p>
-                    <RepoSearch wrappedData={wrappedData} />
+                    <RepoSearch wrappedData={wrappedData} isAuthenticated={false} />
                   </div>
                 </div>
               </div>
@@ -203,7 +203,7 @@ export function HomeContent({ initialData }: HomeContentProps) {
             {/* Repo search for signed-in users */}
             {session && (
               <div className="mb-10">
-                <RepoSearch wrappedData={wrappedData} />
+                <RepoSearch wrappedData={wrappedData} isAuthenticated={true} />
               </div>
             )}
           </div>
