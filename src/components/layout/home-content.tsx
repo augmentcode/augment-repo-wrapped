@@ -137,6 +137,30 @@ export function HomeContent({ initialData }: HomeContentProps) {
               Visual analytics for your GitHub repositories. Track commits, pull requests, code changes, and team contributions across any time period. Perfect for retrospectives, progress tracking, and celebrating your team&apos;s achievements.
             </p>
 
+            {/* How it works */}
+            <div className="mb-10">
+              <p className="eyebrow text-muted-foreground mb-2">How it works</p>
+              <p className="text-2xl font-medium mb-6">Three simple steps</p>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <StepCard
+                  number="01"
+                  title="Enter repository"
+                  description="Enter owner/repo (e.g., vercel/swr) or paste a full GitHub URL"
+                />
+                <StepCard
+                  number="02"
+                  title="View insights"
+                  description="Explore an interactive visual story of your repository"
+                />
+                <StepCard
+                  number="03"
+                  title="Compare & share"
+                  description="Compare time periods, track progress, and share results"
+                />
+              </div>
+            </div>
+
             {/* Demo CTA */}
             <div className="mb-8 p-6 border-2 border-secondary/30 bg-secondary/5 rounded-lg">
               <div className="flex items-start gap-4">
@@ -167,30 +191,6 @@ export function HomeContent({ initialData }: HomeContentProps) {
                   Sign in with GitHub
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-              </div>
-            </div>
-
-            {/* How it works - moved here */}
-            <div className="mb-10">
-              <p className="eyebrow text-muted-foreground mb-2">How it works</p>
-              <p className="text-2xl font-medium mb-6">Three simple steps</p>
-
-              <div className="grid md:grid-cols-3 gap-6">
-                <StepCard
-                  number="01"
-                  title="Enter repository"
-                  description="Enter owner/repo (e.g., vercel/swr) or paste a full GitHub URL"
-                />
-                <StepCard
-                  number="02"
-                  title="View insights"
-                  description="Explore an interactive visual story of your repository"
-                />
-                <StepCard
-                  number="03"
-                  title="Compare & share"
-                  description="Compare time periods, track progress, and share results"
-                />
               </div>
             </div>
           </div>
