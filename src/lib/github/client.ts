@@ -45,14 +45,23 @@ export async function fetchContributorStats(
 ): Promise<GitHubContributorStats[]> {
   // This endpoint may return 202 if data is being computed
   // We need to retry with exponential backoff
-  for (let i = 0; i < 5; i++) {
-    const response = await octokit.repos.getContributorsStats({ owner, repo });
-    if (response.status === 200 && response.data) {
-      return response.data as GitHubContributorStats[];
+  try {
+    for (let i = 0; i < 5; i++) {
+      const response = await octokit.repos.getContributorsStats({ owner, repo });
+      if (response.status === 200 && response.data) {
+        return response.data as GitHubContributorStats[];
+      }
+      // Exponential backoff: 1s, 2s, 4s, 8s, 10s (capped)
+      const delay = Math.min(1000 * Math.pow(2, i), 10000);
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
-    // Exponential backoff: 1s, 2s, 4s, 8s, 10s (capped)
-    const delay = Math.min(1000 * Math.pow(2, i), 10000);
-    await new Promise((resolve) => setTimeout(resolve, delay));
+  } catch (error) {
+    // GitHub may return errors for very large repos
+    if (error instanceof Error && error.message.includes("10000 commits")) {
+      console.warn(`[fetchContributorStats] Repo ${owner}/${repo} has >10,000 commits, skipping contributor stats`);
+      return [];
+    }
+    throw error;
   }
   return [];
 }
@@ -63,14 +72,24 @@ export async function fetchCommitActivity(
   repo: string
 ): Promise<GitHubCommitActivity[]> {
   // This endpoint may return 202 if data is being computed
-  for (let i = 0; i < 5; i++) {
-    const response = await octokit.repos.getCommitActivityStats({ owner, repo });
-    if (response.status === 200 && response.data) {
-      return response.data as GitHubCommitActivity[];
+  // It also has a 10,000 commit limit for very large repos
+  try {
+    for (let i = 0; i < 5; i++) {
+      const response = await octokit.repos.getCommitActivityStats({ owner, repo });
+      if (response.status === 200 && response.data) {
+        return response.data as GitHubCommitActivity[];
+      }
+      // Exponential backoff: 1s, 2s, 4s, 8s, 10s (capped)
+      const delay = Math.min(1000 * Math.pow(2, i), 10000);
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
-    // Exponential backoff: 1s, 2s, 4s, 8s, 10s (capped)
-    const delay = Math.min(1000 * Math.pow(2, i), 10000);
-    await new Promise((resolve) => setTimeout(resolve, delay));
+  } catch (error) {
+    // GitHub returns 422 for repos with >10,000 commits
+    if (error instanceof Error && error.message.includes("10000 commits")) {
+      console.warn(`[fetchCommitActivity] Repo ${owner}/${repo} has >10,000 commits, skipping commit activity stats`);
+      return [];
+    }
+    throw error;
   }
   return [];
 }
