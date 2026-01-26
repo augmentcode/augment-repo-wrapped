@@ -22,7 +22,12 @@ import { DEMO_CONFIG } from "@/lib/demo-config";
 // Key: `${owner}/${repo}/${year}`
 // Value: { data, timestamp }
 const cache = new Map<string, { data: any; timestamp: number }>();
-const CACHE_TTL = 1000 * 60 * 5; // 5 minutes
+const CACHE_TTL = 1000 * 60 * 5; // 5 minutes for regular repos
+const DEMO_CACHE_TTL = 1000 * 60 * 60 * 24; // 24 hours for demo repo
+
+// Pre-warm cache flag to ensure we only do it once
+let isPrewarming = false;
+let hasPrewarmed = false;
 
 export async function GET(request: NextRequest) {
   try {
@@ -58,11 +63,12 @@ export async function GET(request: NextRequest) {
     // Note: GitHub allows unauthenticated requests with lower rate limits (60/hour vs 5000/hour)
     const effectiveToken = accessToken || undefined;
 
-    // Check cache first
+    // Check cache first (use longer TTL for demo repo)
     const cacheKey = `${owner}/${repo}/${year}`;
+    const cacheTTL = isDemo ? DEMO_CACHE_TTL : CACHE_TTL;
     const cached = cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-      console.log(`[Cache HIT] ${cacheKey}`);
+    if (cached && Date.now() - cached.timestamp < cacheTTL) {
+      console.log(`[Cache HIT] ${cacheKey} (TTL: ${cacheTTL / 1000 / 60} minutes)`);
       return NextResponse.json(cached.data);
     }
 
@@ -111,13 +117,13 @@ export async function GET(request: NextRequest) {
       year
     );
 
-    // Cache the result
+    // Cache the result (use longer TTL for demo repo)
     cache.set(cacheKey, {
       data: wrappedData,
       timestamp: Date.now(),
     });
 
-    console.log(`[Cache SET] ${cacheKey} - Cached for ${CACHE_TTL / 1000}s`);
+    console.log(`[Cache SET] ${cacheKey} - Cached for ${cacheTTL / 1000 / 60} minutes`);
 
     return NextResponse.json(wrappedData);
   } catch (error) {
@@ -186,4 +192,80 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+// Pre-warm the cache with demo data on first request
+async function prewarmDemoCache() {
+  if (isPrewarming || hasPrewarmed) return;
+
+  isPrewarming = true;
+
+  try {
+    console.log("[Cache Prewarm] Starting demo cache prewarm...");
+
+    const cacheKey = `${DEMO_CONFIG.owner}/${DEMO_CONFIG.repo}/${DEMO_CONFIG.year}`;
+
+    // Check if already cached
+    if (cache.has(cacheKey)) {
+      console.log("[Cache Prewarm] Demo already cached, skipping");
+      hasPrewarmed = true;
+      isPrewarming = false;
+      return;
+    }
+
+    // Fetch demo data without authentication (public repo)
+    const octokit = createGitHubClient(undefined);
+    const githubAPI = new GitHubAPI(undefined);
+
+    const [repoInfo, contributors] = await Promise.all([
+      fetchRepoInfo(octokit, DEMO_CONFIG.owner, DEMO_CONFIG.repo),
+      fetchContributors(octokit, DEMO_CONFIG.owner, DEMO_CONFIG.repo),
+    ]);
+
+    const [contributorStats, commitActivity, codeFrequency, languages] =
+      await Promise.all([
+        fetchContributorStats(octokit, DEMO_CONFIG.owner, DEMO_CONFIG.repo),
+        fetchCommitActivity(octokit, DEMO_CONFIG.owner, DEMO_CONFIG.repo),
+        fetchCodeFrequency(octokit, DEMO_CONFIG.owner, DEMO_CONFIG.repo),
+        fetchLanguages(octokit, DEMO_CONFIG.owner, DEMO_CONFIG.repo),
+      ]);
+
+    const [graphqlPRs, issues] = await Promise.all([
+      githubAPI.fetchWrappedPRData(DEMO_CONFIG.owner, DEMO_CONFIG.repo, DEMO_CONFIG.year),
+      fetchIssues(octokit, DEMO_CONFIG.owner, DEMO_CONFIG.repo, DEMO_CONFIG.year),
+    ]);
+
+    const prs = transformGraphQLPRsToREST(graphqlPRs);
+    const reviewsByPR = extractReviewsFromGraphQLPRs(graphqlPRs);
+
+    const wrappedData = assembleWrappedData(
+      repoInfo,
+      contributors,
+      contributorStats,
+      commitActivity,
+      codeFrequency,
+      languages,
+      prs,
+      issues,
+      reviewsByPR,
+      DEMO_CONFIG.year
+    );
+
+    cache.set(cacheKey, {
+      data: wrappedData,
+      timestamp: Date.now(),
+    });
+
+    console.log(`[Cache Prewarm] Demo cached successfully for 24 hours`);
+    hasPrewarmed = true;
+  } catch (error) {
+    console.error("[Cache Prewarm] Failed to prewarm demo cache:", error);
+  } finally {
+    isPrewarming = false;
+  }
+}
+
+// Trigger prewarm on module load (background, non-blocking)
+if (process.env.NODE_ENV === "production") {
+  prewarmDemoCache().catch(console.error);
 }
