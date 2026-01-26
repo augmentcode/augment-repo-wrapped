@@ -40,6 +40,30 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
   // Check if this is demo mode
   const isDemo = DEMO_CONFIG.isDemo(data.repo.owner.login, data.repo.name);
 
+  // Filter slides based on available data
+  const getAvailableSlides = () => {
+    return SLIDE_CONFIGS.filter((config) => {
+      // Always show these slides
+      if (['cover', 'commits', 'pull-requests', 'pr-highlights', 'reviews', 'activity', 'community', 'personality', 'augment', 'finale'].includes(config.type)) {
+        return true;
+      }
+
+      // Skip contributors slide if we have no contributor data
+      if (config.type === 'contributors') {
+        return data.contributors.total > 0 || data.contributors.topContributors.length > 0;
+      }
+
+      // Skip code changes slide if we have no code change data
+      if (config.type === 'code-changes') {
+        return data.codeChanges.additions > 0 || data.codeChanges.deletions > 0;
+      }
+
+      return true;
+    });
+  };
+
+  const availableSlides = getAvailableSlides();
+
   const {
     currentSlideIndex,
     isPlaying,
@@ -66,7 +90,7 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
       reset();
 
       // Then jump to the initial slide if needed
-      if (initialSlideIndex > 0 && initialSlideIndex < TOTAL_SLIDES) {
+      if (initialSlideIndex > 0 && initialSlideIndex < availableSlides.length) {
         goToSlide(initialSlideIndex);
       }
 
@@ -80,8 +104,8 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
 
   const [progress, setProgress] = useState(0);
 
-  const currentSlideConfig = SLIDE_CONFIGS[currentSlideIndex];
-  const isLastSlide = currentSlideIndex === TOTAL_SLIDES - 1;
+  const currentSlideConfig = availableSlides[currentSlideIndex];
+  const isLastSlide = currentSlideIndex === availableSlides.length - 1;
 
   // Auto-advance logic
   useEffect(() => {
@@ -223,7 +247,7 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
         className="relative w-full h-full md:w-[400px] md:h-[711px] md:rounded-lg overflow-hidden md:shadow-2xl md:border md:border-border"
         style={{ maxHeight: "100vh" }}
       >
-        <ProgressIndicator currentIndex={currentSlideIndex} progress={progress} />
+        <ProgressIndicator currentIndex={currentSlideIndex} progress={progress} slides={availableSlides} />
 
         {/* Controls */}
         <div className="absolute top-4 right-4 z-30 flex items-center gap-2">
