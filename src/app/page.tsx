@@ -1,6 +1,7 @@
 import { HomeContent } from "@/components/layout/home-content";
 import { auth } from "@/lib/auth";
 import { cookies } from "next/headers";
+import { Session } from "next-auth";
 
 const PAT_COOKIE_NAME = "github_pat";
 
@@ -21,7 +22,7 @@ export default async function HomePage() {
   console.log("Is authenticated:", isAuthenticated);
 
   // Pass a mock session object if authenticated via PAT
-  const sessionToPass = session || (hasPAT ? { user: {} } : null);
+  const sessionToPass = session || (hasPAT ? { user: {}, expires: "" } as Session : null);
 
   return <HomeContent session={sessionToPass} />;
 }
