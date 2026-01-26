@@ -448,9 +448,10 @@ export function transformContributorStats(
       totalWeeks: totalWeeksInYear,
     }));
 
-  // Use contributorData.length if available, otherwise fall back to contributors.length
-  // This ensures we show a count even when detailed stats aren't available
-  const total = contributorData.length > 0 ? contributorData.length : contributors.length;
+  // Calculate total: if we have detailed stats, use contributorData.length
+  // If we're using fallback data (topContributors was empty), use the actual contributors list length
+  // This ensures we show accurate count even when detailed stats aren't available
+  const total = topContributors.length > 0 ? contributorData.length : contributors.length;
 
   return {
     total,

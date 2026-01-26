@@ -48,9 +48,9 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
         return true;
       }
 
-      // Skip contributors slide if total is 0 (even if we have a list, the total being 0 means incomplete data)
+      // Skip contributors slide if we have no contributor data
       if (config.type === 'contributors') {
-        return data.contributors.total > 0;
+        return data.contributors.total > 0 && data.contributors.topContributors.length > 0;
       }
 
       // Skip code changes slide if we have no code change data
