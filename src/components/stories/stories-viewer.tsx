@@ -19,7 +19,6 @@ import { CodeChangesSlide } from "./slides/code-changes-slide";
 import { CommunitySlide } from "./slides/community-slide";
 import { PersonalitySlide } from "./slides/personality-slide";
 import { AugmentSlide } from "./slides/augment-slide";
-import { FinaleSlide } from "./slides/finale-slide";
 import { ShareButton } from "../sharing/share-button";
 import { X, Pause, Play, Info } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -44,7 +43,7 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
   const getAvailableSlides = () => {
     return SLIDE_CONFIGS.filter((config) => {
       // Always show these slides
-      if (['cover', 'commits', 'pull-requests', 'pr-highlights', 'reviews', 'activity', 'community', 'personality', 'augment', 'finale'].includes(config.type)) {
+      if (['cover', 'commits', 'pull-requests', 'pr-highlights', 'reviews', 'activity', 'community', 'personality', 'augment'].includes(config.type)) {
         return true;
       }
 
@@ -208,16 +207,6 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
         );
       case "augment":
         return <AugmentSlide pullRequests={data.pullRequests} />;
-      case "finale":
-        return (
-          <FinaleSlide
-            repo={data.repo}
-            commits={data.commits}
-            contributors={data.contributors}
-            year={data.year}
-            isDemo={isDemo}
-          />
-        );
       default:
         return null;
     }

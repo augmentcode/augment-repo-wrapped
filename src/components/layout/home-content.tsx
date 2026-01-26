@@ -21,6 +21,12 @@ export function HomeContent({ initialData, session }: HomeContentProps) {
   const [comparisonData, setComparisonData] = useState<WrappedData | null>(null);
   const [isLoadingComparison, setIsLoadingComparison] = useState(false);
 
+  // Debug: Log session state
+  useEffect(() => {
+    console.log("HomeContent session:", session);
+    console.log("Is authenticated:", !!session);
+  }, [session]);
+
   // Listen for wrapped data from localStorage (set after viewing reel)
   useEffect(() => {
     const handleStorageChange = () => {

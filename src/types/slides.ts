@@ -9,8 +9,7 @@ export type SlideType =
   | "code-changes"
   | "community"
   | "personality"
-  | "augment"
-  | "finale";
+  | "augment";
 
 export interface SlideConfig {
   type: SlideType;
@@ -31,8 +30,7 @@ export const SLIDE_CONFIGS: SlideConfig[] = [
   { type: "code-changes", duration: 10000, gradientClass: "bg-background" },   // 7s → 10s
   { type: "community", duration: 9000, gradientClass: "bg-background" },       // 6s → 9s
   { type: "personality", duration: 12000, gradientClass: "bg-background" },    // 8s → 12s
-  { type: "augment", duration: 9000, gradientClass: "bg-background" },         // 6s → 9s
-  { type: "finale", duration: 0, gradientClass: "bg-background" },             // No auto-advance
+  { type: "augment", duration: 0, gradientClass: "bg-background" },            // No auto-advance (last slide)
 ];
 
 export const TOTAL_SLIDES = SLIDE_CONFIGS.length;
