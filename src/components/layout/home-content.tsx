@@ -8,12 +8,14 @@ import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { formatDuration } from "@/lib/utils";
+import { useSession } from "next-auth/react";
 
 interface HomeContentProps {
   initialData?: WrappedData | null;
 }
 
 export function HomeContent({ initialData }: HomeContentProps) {
+  const { data: session } = useSession();
   const [wrappedData, setWrappedData] = useState<WrappedData | null>(initialData || null);
   const [comparisonYear, setComparisonYear] = useState<number | null>(null);
   const [comparisonData, setComparisonData] = useState<WrappedData | null>(null);
@@ -161,38 +163,49 @@ export function HomeContent({ initialData }: HomeContentProps) {
               </div>
             </div>
 
-            {/* Demo CTA */}
-            <div className="mb-8 p-6 border-2 border-secondary/30 bg-secondary/5 rounded-lg">
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
-                  <p className="text-sm font-medium text-secondary mb-2">👉 Try the demo first</p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Click <strong>Generate</strong> below to see an example with <span className="font-mono">vercel/swr</span>.
-                    No sign-in required!
-                  </p>
-                  <RepoSearch wrappedData={wrappedData} />
+            {/* Demo CTA - only show when not signed in */}
+            {!session && (
+              <div className="mb-8 p-6 border-2 border-secondary/30 bg-secondary/5 rounded-lg">
+                <div className="flex items-start gap-4">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium text-secondary mb-2">👉 Try the demo first</p>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      Click <strong>Generate</strong> below to see an example with <span className="font-mono">vercel/swr</span>.
+                      No sign-in required!
+                    </p>
+                    <RepoSearch wrappedData={wrappedData} />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            {/* Sign in CTA */}
-            <div className="mb-10 p-6 border border-border bg-card rounded-lg">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                  <p className="font-medium mb-1">Want to analyze your own repositories?</p>
-                  <p className="text-sm text-muted-foreground">
-                    Sign in with GitHub to generate insights for any repo you have access to
-                  </p>
+            {/* Sign in CTA - only show when not signed in */}
+            {!session && (
+              <div className="mb-10 p-6 border border-border bg-card rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  <div>
+                    <p className="font-medium mb-1">Want to analyze your own repositories?</p>
+                    <p className="text-sm text-muted-foreground">
+                      Sign in with GitHub to generate insights for any repo you have access to
+                    </p>
+                  </div>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center justify-center gap-2 h-10 px-6 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:bg-secondary/80 transition-colors shrink-0"
+                  >
+                    Sign in with GitHub
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </div>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center justify-center gap-2 h-10 px-6 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:bg-secondary/80 transition-colors shrink-0"
-                >
-                  Sign in with GitHub
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
               </div>
-            </div>
+            )}
+
+            {/* Repo search for signed-in users */}
+            {session && (
+              <div className="mb-10">
+                <RepoSearch wrappedData={wrappedData} />
+              </div>
+            )}
           </div>
         </div>
       </section>
