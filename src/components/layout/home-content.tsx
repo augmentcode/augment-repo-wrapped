@@ -137,6 +137,39 @@ export function HomeContent({ initialData }: HomeContentProps) {
               Visual analytics for your GitHub repositories. Track commits, pull requests, code changes, and team contributions across any time period. Perfect for retrospectives, progress tracking, and celebrating your team&apos;s achievements.
             </p>
 
+            {/* Demo CTA */}
+            <div className="mb-8 p-6 border-2 border-secondary/30 bg-secondary/5 rounded-lg">
+              <div className="flex items-start gap-4">
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-secondary mb-2">👉 Try the demo first</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Click <strong>Generate</strong> below to see an example with <span className="font-mono">vercel/swr</span>.
+                    No sign-in required!
+                  </p>
+                  <RepoSearch wrappedData={wrappedData} />
+                </div>
+              </div>
+            </div>
+
+            {/* Sign in CTA */}
+            <div className="mb-10 p-6 border border-border bg-card rounded-lg">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                <div>
+                  <p className="font-medium mb-1">Want to analyze your own repositories?</p>
+                  <p className="text-sm text-muted-foreground">
+                    Sign in with GitHub to generate insights for any repo you have access to
+                  </p>
+                </div>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center gap-2 h-10 px-6 bg-secondary text-secondary-foreground rounded-md text-sm font-medium hover:bg-secondary/80 transition-colors shrink-0"
+                >
+                  Sign in with GitHub
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </div>
+            </div>
+
             {/* How it works - moved here */}
             <div className="mb-10">
               <p className="eyebrow text-muted-foreground mb-2">How it works</p>
@@ -160,8 +193,6 @@ export function HomeContent({ initialData }: HomeContentProps) {
                 />
               </div>
             </div>
-
-            <RepoSearch wrappedData={wrappedData} />
           </div>
         </div>
       </section>
