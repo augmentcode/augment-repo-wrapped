@@ -118,7 +118,7 @@ export function RepoSearch({ wrappedData }: RepoSearchProps) {
       )}
       {!error && (
         <p className="text-xs text-muted-foreground mt-2">
-          Examples: <span className="font-mono">shadcn-ui/ui</span> or <span className="font-mono">https://github.com/vercel/swr</span>
+          Examples: <span className="font-mono">vercel/swr</span> or <span className="font-mono">https://github.com/pmndrs/zustand</span>
         </p>
       )}
     </form>

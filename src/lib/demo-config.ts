@@ -4,8 +4,8 @@
  */
 
 export const DEMO_CONFIG = {
-  owner: "shadcn-ui",
-  repo: "ui",
+  owner: "vercel",
+  repo: "swr",
   year: 2024,
   // Full path for easy matching
   get path() {
