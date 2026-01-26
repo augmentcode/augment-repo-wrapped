@@ -10,7 +10,7 @@ import {
   GitHubReview,
 } from "@/types/github";
 
-export function createGitHubClient(accessToken: string) {
+export function createGitHubClient(accessToken?: string) {
   return new Octokit({
     auth: accessToken,
   });

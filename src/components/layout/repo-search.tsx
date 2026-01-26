@@ -12,13 +12,14 @@ interface RepoSearchProps {
 }
 
 export function RepoSearch({ wrappedData }: RepoSearchProps) {
-  const [repoUrl, setRepoUrl] = useState("");
+  // Prepopulate with demo repo (vercel/swr) for easy first-time use
+  const [repoUrl, setRepoUrl] = useState("vercel/swr");
   // Default to previous year since most people want to review a completed year
   const [year, setYear] = useState(new Date().getFullYear() - 1);
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // Load last used repo from localStorage on mount
+  // Load last used repo from localStorage on mount (overrides default)
   useEffect(() => {
     const lastRepo = localStorage.getItem("lastRepoInput");
     if (lastRepo) {

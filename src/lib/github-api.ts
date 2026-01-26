@@ -71,17 +71,17 @@ export interface ReviewRequest {
 }
 
 export class GitHubAPI {
-  private token: string;
+  private token?: string;
   private graphqlClient: typeof graphql;
   private rateLimitRemaining: number | null = null;
   private rateLimitResetAt: Date | null = null;
 
-  constructor(token: string) {
+  constructor(token?: string) {
     this.token = token;
     this.graphqlClient = graphql.defaults({
-      headers: {
+      headers: token ? {
         authorization: `Bearer ${token}`,
-      },
+      } : {},
     });
   }
 
@@ -101,12 +101,17 @@ export class GitHubAPI {
     }
 
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      if (this.token) {
+        headers.Authorization = `Bearer ${this.token}`;
+      }
+
       const response = await fetch(GITHUB_GRAPHQL_ENDPOINT, {
         method: "POST",
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({ query: graphqlQuery, variables }),
       });
 

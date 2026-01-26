@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
 import { NextResponse } from "next/server";
+import { DEMO_CONFIG } from "@/lib/demo-config";
 
 const PAT_COOKIE_NAME = "github_pat";
 
@@ -19,8 +20,11 @@ export default auth((req) => {
   const isOnWrapped = req.nextUrl.pathname.startsWith("/wrapped");
   const isOnLogin = req.nextUrl.pathname === "/login";
 
-  // Protect wrapped routes - require authentication
-  if (isOnWrapped && !isLoggedIn) {
+  // Check if this is the demo repo path
+  const isDemoPath = req.nextUrl.pathname === DEMO_CONFIG.path;
+
+  // Protect wrapped routes - require authentication (except for demo)
+  if (isOnWrapped && !isLoggedIn && !isDemoPath) {
     return Response.redirect(new URL("/login", req.url));
   }
 

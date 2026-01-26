@@ -40,15 +40,23 @@ export async function GET(request: NextRequest) {
 
     const year = yearParam ? parseInt(yearParam, 10) : new Date().getFullYear();
 
-    // Get access token
+    // Check if this is the demo repo
+    const isDemo = DEMO_CONFIG.isDemo(owner, repo);
+
+    // Get access token (optional for demo repo)
     const accessToken = await getAccessToken();
 
-    if (!accessToken) {
+    // For non-demo repos, require authentication
+    if (!accessToken && !isDemo) {
       return NextResponse.json(
         { error: "Unauthorized", message: "Please sign in to continue" },
         { status: 401 }
       );
     }
+
+    // For demo repo without auth, use unauthenticated API (lower rate limits but works for public repos)
+    // Note: GitHub allows unauthenticated requests with lower rate limits (60/hour vs 5000/hour)
+    const effectiveToken = accessToken || undefined;
 
     // Check cache first
     const cacheKey = `${owner}/${repo}/${year}`;
@@ -59,9 +67,10 @@ export async function GET(request: NextRequest) {
     }
 
     console.log(`[Cache MISS] ${cacheKey} - Fetching from GitHub...`);
+    console.log(`[Demo Mode] ${isDemo ? "Yes" : "No"} - Using ${effectiveToken ? "authenticated" : "unauthenticated"} API`);
 
-    const octokit = createGitHubClient(accessToken);
-    const githubAPI = new GitHubAPI(accessToken);
+    const octokit = createGitHubClient(effectiveToken);
+    const githubAPI = new GitHubAPI(effectiveToken);
 
     // Fetch all data in parallel where possible
     const [repoInfo, contributors] = await Promise.all([
