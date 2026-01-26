@@ -146,7 +146,7 @@ export function HomeContent({ initialData }: HomeContentProps) {
                 <StepCard
                   number="01"
                   title="Enter repository"
-                  description="Enter owner/repo (e.g., vercel/next.js) or paste a full GitHub URL"
+                  description="Enter owner/repo (e.g., shadcn-ui/ui) or paste a full GitHub URL"
                 />
                 <StepCard
                   number="02"

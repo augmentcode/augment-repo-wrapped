@@ -4,8 +4,8 @@
  */
 
 export const DEMO_CONFIG = {
-  owner: "vercel",
-  repo: "next.js",
+  owner: "shadcn-ui",
+  repo: "ui",
   year: 2024,
   // Full path for easy matching
   get path() {
@@ -13,7 +13,7 @@ export const DEMO_CONFIG = {
   },
   // Check if a given owner/repo matches the demo
   isDemo(owner: string, repo: string): boolean {
-    return owner.toLowerCase() === this.owner.toLowerCase() && 
+    return owner.toLowerCase() === this.owner.toLowerCase() &&
            repo.toLowerCase() === this.repo.toLowerCase();
   }
 } as const;
