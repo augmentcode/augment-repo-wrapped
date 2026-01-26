@@ -209,11 +209,10 @@ export function StoriesViewer({ data, initialSlideIndex = 0 }: StoriesViewerProp
         <div className="absolute top-0 left-0 right-0 z-50 bg-secondary/90 backdrop-blur-sm text-secondary-foreground px-4 py-2 text-center text-sm flex items-center justify-center gap-2">
           <Info className="h-4 w-4" />
           <span>
-            This is a demo for <strong>{data.repo.fullName}</strong>.{" "}
-            <Link href="/login" className="underline hover:no-underline">
+            Viewing demo for <strong>{data.repo.fullName}</strong>. Want to try on your repo?{" "}
+            <Link href="/login" className="underline hover:no-underline font-semibold">
               Sign in
-            </Link>{" "}
-            to generate your own.
+            </Link>
           </span>
         </div>
       )}
