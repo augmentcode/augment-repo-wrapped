@@ -6,26 +6,32 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 import { WrappedData } from "@/types/wrapped";
+import { useSession } from "next-auth/react";
 
 interface RepoSearchProps {
   wrappedData?: WrappedData | null;
 }
 
 export function RepoSearch({ wrappedData }: RepoSearchProps) {
-  // Prepopulate with demo repo (vercel/swr) for easy first-time use
-  const [repoUrl, setRepoUrl] = useState("vercel/swr");
+  const { data: session } = useSession();
+
+  // Prepopulate with demo repo (vercel/swr) only for non-authenticated users
+  const [repoUrl, setRepoUrl] = useState("");
   // Default to previous year since most people want to review a completed year
   const [year, setYear] = useState(new Date().getFullYear() - 1);
   const [error, setError] = useState("");
   const router = useRouter();
 
-  // Load last used repo from localStorage on mount (overrides default)
+  // Set initial value based on auth state
   useEffect(() => {
     const lastRepo = localStorage.getItem("lastRepoInput");
     if (lastRepo) {
       setRepoUrl(lastRepo);
+    } else if (!session) {
+      // Only prepopulate with demo if not signed in and no last repo
+      setRepoUrl("vercel/swr");
     }
-  }, []);
+  }, [session]);
 
   // Sync year with wrapped data when available
   useEffect(() => {
