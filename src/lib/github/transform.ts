@@ -448,8 +448,12 @@ export function transformContributorStats(
       totalWeeks: totalWeeksInYear,
     }));
 
+  // Use contributorData.length if available, otherwise fall back to contributors.length
+  // This ensures we show a count even when detailed stats aren't available
+  const total = contributorData.length > 0 ? contributorData.length : contributors.length;
+
   return {
-    total: contributorData.length, // Year-specific: contributors who had activity this year
+    total,
     newThisYear: risingStars.length,
     topContributors: finalTopContributors,
     topByPRs,
@@ -463,7 +467,8 @@ export function transformContributorStats(
 export function transformCodeStats(
   codeFrequency: [number, number, number][],
   languages: GitHubLanguages,
-  year: number
+  year: number,
+  prs?: GitHubPullRequest[] // Optional fallback for when codeFrequency is empty
 ): CodeStats {
   const yearStart = new Date(year, 0, 1).getTime() / 1000;
   const yearEnd = new Date(year, 11, 31, 23, 59, 59).getTime() / 1000;
@@ -473,8 +478,14 @@ export function transformCodeStats(
     ([week]) => week >= yearStart && week <= yearEnd
   );
 
-  const additions = yearData.reduce((sum, [, a]) => sum + a, 0);
-  const deletions = yearData.reduce((sum, [, , d]) => sum + Math.abs(d), 0);
+  let additions = yearData.reduce((sum, [, a]) => sum + a, 0);
+  let deletions = yearData.reduce((sum, [, , d]) => sum + Math.abs(d), 0);
+
+  // Fallback: If codeFrequency is empty but we have PR data, use that instead
+  if (additions === 0 && deletions === 0 && prs && prs.length > 0) {
+    additions = prs.reduce((sum, pr) => sum + (pr.additions || 0), 0);
+    deletions = prs.reduce((sum, pr) => sum + (pr.deletions || 0), 0);
+  }
 
   // Find busiest week
   let busiestWeek = null;
@@ -975,7 +986,7 @@ export function assembleWrappedData(
     reviews: reviewStats,
     issues: transformIssueStats(issues),
     contributors: contributorStatsResult,
-    codeChanges: transformCodeStats(codeFrequency, languages, year),
+    codeChanges: transformCodeStats(codeFrequency, languages, year, prs),
     community: transformCommunityStats(repo),
     activity: transformActivityStats(commitActivity, year),
     velocity: velocityStats,
