@@ -21,7 +21,9 @@ export default auth((req) => {
   const isOnLogin = req.nextUrl.pathname === "/login";
 
   // Check if this is the demo repo path
-  const isDemoPath = req.nextUrl.pathname === DEMO_CONFIG.path;
+  // Match /wrapped/vercel/swr (case-insensitive)
+  const isDemoPath = req.nextUrl.pathname === DEMO_CONFIG.path ||
+                     req.nextUrl.pathname.toLowerCase() === DEMO_CONFIG.path.toLowerCase();
 
   // Protect wrapped routes - require authentication (except for demo)
   if (isOnWrapped && !isLoggedIn && !isDemoPath) {
